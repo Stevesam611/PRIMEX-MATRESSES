@@ -268,10 +268,57 @@ $auth->requireAdmin();
     </div>
 </div>
 
+<!-- Reply Modal -->
+<div id="reply-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+        <div class="flex items-center justify-between p-6 border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-reply text-purple-600"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-semibold text-gray-900">Reply to Message</h3>
+                    <p id="reply-to-name" class="text-xs text-gray-500"></p>
+                </div>
+            </div>
+            <button onclick="closeReplyModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <!-- Original message preview -->
+        <div class="px-6 pt-4">
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Original Message</p>
+                <p id="reply-orig-subject" class="text-xs font-semibold text-gray-700 mb-1"></p>
+                <p id="reply-orig-message" class="text-xs text-gray-600 leading-relaxed line-clamp-3"></p>
+            </div>
+        </div>
+        <div class="p-6 space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                <input type="text" id="reply-subject" class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-400">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Reply Message</label>
+                <textarea id="reply-message" rows="5" placeholder="Type your reply here..."
+                    class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none"></textarea>
+            </div>
+            <div id="reply-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                <i class="fas fa-exclamation-circle mr-1"></i><span id="reply-error-text"></span>
+            </div>
+        </div>
+        <div class="flex space-x-3 px-6 pb-6">
+            <button onclick="closeReplyModal()" class="flex-1 py-2.5 border border-gray-200 rounded-lg text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors">Cancel</button>
+            <button onclick="sendReply()" id="reply-btn" class="flex-1 py-2.5 bg-gradient-to-r from-purple-600 to-primary-600 text-white rounded-lg hover:opacity-90 text-sm font-medium transition-opacity">
+                <i class="fas fa-paper-plane mr-1"></i> Send Reply
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    let currentFilter  = 'all';
-    let currentPage    = 1;
-    let deleteTargetId = null;
+    let currentFilter    = 'all';
+    let currentPage      = 1;
+    let deleteTargetId   = null;
+    let currentReplyMsg  = null;
 
     let searchTimeout;
     function debouncedSearch() {
@@ -342,6 +389,10 @@ $auth->requireAdmin();
             ? `<span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full"><i class="fas fa-circle text-[8px] mr-1"></i>Unread</span>`
             : `<span class="px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-full"><i class="fas fa-envelope-open text-[10px] mr-1"></i>Read</span>`;
 
+        const repliedBadge = m.replied_at
+            ? `<span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full"><i class="fas fa-reply text-[10px] mr-1"></i>Replied</span>`
+            : '';
+
         const toggleBtn = isUnread
             ? `<button onclick="updateMessage(${m.id},'read')" class="px-3 py-1.5 text-xs font-medium border border-green-300 text-green-700 rounded-lg hover:bg-green-50 transition-colors"><i class="fas fa-check mr-1"></i>Mark Read</button>`
             : `<button onclick="updateMessage(${m.id},'unread')" class="px-3 py-1.5 text-xs font-medium border border-blue-300 text-blue-700 rounded-lg hover:bg-blue-50 transition-colors"><i class="fas fa-envelope mr-1"></i>Mark Unread</button>`;
@@ -365,11 +416,16 @@ $auth->requireAdmin();
                         <div class="flex items-center gap-2 mb-3">
                             <span class="text-xs font-semibold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded">${escHtml(m.subject)}</span>
                             ${statusBadge}
+                            ${repliedBadge}
                         </div>
                         <p class="text-gray-700 text-sm leading-relaxed">${escHtml(m.message)}</p>
+                        ${m.admin_reply ? `<div class="mt-3 p-3 bg-purple-50 border border-purple-100 rounded-lg"><p class="text-xs font-semibold text-purple-700 mb-1"><i class="fas fa-reply mr-1"></i>Admin reply:</p><p class="text-xs text-purple-900 leading-relaxed">${escHtml(m.admin_reply)}</p></div>` : ''}
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 flex-shrink-0">
+                    <button onclick="openReplyModal(${JSON.stringify(m).replace(/"/g,'&quot;')})" class="px-3 py-1.5 text-xs font-medium border border-purple-300 text-purple-700 rounded-lg hover:bg-purple-50 transition-colors">
+                        <i class="fas fa-reply mr-1"></i>Reply
+                    </button>
                     ${toggleBtn}
                     <button onclick="openDeleteModal(${m.id})" class="px-3 py-1.5 text-xs font-medium border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition-colors">
                         <i class="fas fa-trash mr-1"></i>Delete
@@ -440,6 +496,64 @@ $auth->requireAdmin();
             }
         } catch (e) {
             showToast('An error occurred', 'error');
+        }
+    }
+
+    function openReplyModal(m) {
+        if (typeof m === 'string') m = JSON.parse(m);
+        currentReplyMsg = m;
+        document.getElementById('reply-to-name').textContent = `To: ${m.first_name} ${m.last_name} <${m.email}>`;
+        document.getElementById('reply-orig-subject').textContent = m.subject;
+        document.getElementById('reply-orig-message').textContent = m.message;
+        document.getElementById('reply-subject').value = `Re: ${m.subject}`;
+        document.getElementById('reply-message').value = '';
+        document.getElementById('reply-error').classList.add('hidden');
+        document.getElementById('reply-btn').disabled = false;
+        document.getElementById('reply-btn').innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Send Reply';
+        document.getElementById('reply-modal').classList.remove('hidden');
+    }
+
+    function closeReplyModal() {
+        currentReplyMsg = null;
+        document.getElementById('reply-modal').classList.add('hidden');
+    }
+
+    async function sendReply() {
+        if (!currentReplyMsg) return;
+        const subject = document.getElementById('reply-subject').value.trim();
+        const message = document.getElementById('reply-message').value.trim();
+        const errDiv  = document.getElementById('reply-error');
+        errDiv.classList.add('hidden');
+
+        if (!subject) { document.getElementById('reply-error-text').textContent = 'Subject is required.'; errDiv.classList.remove('hidden'); return; }
+        if (!message) { document.getElementById('reply-error-text').textContent = 'Reply message is required.'; errDiv.classList.remove('hidden'); return; }
+
+        const btn = document.getElementById('reply-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Sending...';
+
+        try {
+            const res    = await fetch('../backend/api/messages.php', {
+                method:  'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ id: currentReplyMsg.id, action: 'reply', reply_subject: subject, reply_message: message })
+            });
+            const result = await res.json();
+            if (result.success) {
+                closeReplyModal();
+                showToast('Reply sent successfully');
+                loadMessages();
+            } else {
+                document.getElementById('reply-error-text').textContent = result.error || 'Failed to send reply.';
+                errDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Send Reply';
+            }
+        } catch(e) {
+            document.getElementById('reply-error-text').textContent = 'Network error. Please try again.';
+            errDiv.classList.remove('hidden');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Send Reply';
         }
     }
 
@@ -531,6 +645,7 @@ $auth->requireAdmin();
     }
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('change-pwd-modal').addEventListener('click', function(e){ if(e.target===this) closeChangePassword(); });
+        document.getElementById('reply-modal').addEventListener('click', function(e){ if(e.target===this) closeReplyModal(); });
     });
 
     document.addEventListener('DOMContentLoaded', () => {

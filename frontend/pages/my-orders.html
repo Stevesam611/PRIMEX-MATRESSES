@@ -70,9 +70,9 @@
 
     <div class="pt-28 pb-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-                <h1 class="text-3xl font-serif font-bold text-gray-900">My Orders</h1>
+                <h1 class="text-3xl font-serif font-bold text-gray-900">My Account</h1>
                 <p id="user-greeting" class="text-gray-500 mt-1 text-sm"></p>
             </div>
             <a href="products.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
@@ -80,11 +80,36 @@
             </a>
         </div>
 
-        <!-- Orders Container -->
-        <div id="orders-container">
-            <div class="text-center py-20 text-gray-400">
-                <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
-                <p>Loading your orders...</p>
+        <!-- Tabs -->
+        <div class="flex space-x-1 bg-white rounded-xl shadow-sm p-1.5 mb-6 w-fit">
+            <button id="tab-orders" onclick="switchTab('orders')"
+                class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-sm">
+                <i class="fas fa-box"></i> My Orders
+            </button>
+            <button id="tab-messages" onclick="switchTab('messages')"
+                class="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all text-gray-500 hover:text-gray-700 hover:bg-gray-50">
+                <i class="fas fa-envelope"></i> My Messages
+                <span id="msg-unread-dot" class="hidden w-2 h-2 bg-red-500 rounded-full"></span>
+            </button>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="section-orders">
+            <div id="orders-container">
+                <div class="text-center py-20 text-gray-400">
+                    <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+                    <p>Loading your orders...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Section -->
+        <div id="section-messages" class="hidden">
+            <div id="messages-container">
+                <div class="text-center py-20 text-gray-400">
+                    <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+                    <p>Loading your messages...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -577,6 +602,104 @@
             return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
 
+        // ── Tab switching ─────────────────────────────────────────────────
+        let messagesLoaded = false;
+        function switchTab(tab) {
+            const isOrders = tab === 'orders';
+            document.getElementById('section-orders').classList.toggle('hidden', !isOrders);
+            document.getElementById('section-messages').classList.toggle('hidden', isOrders);
+
+            const activeClass   = 'bg-gradient-to-r from-primary-600 to-secondary-600 text-white shadow-sm';
+            const inactiveClass = 'text-gray-500 hover:text-gray-700 hover:bg-gray-50';
+            document.getElementById('tab-orders').className   = `flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${isOrders ? activeClass : inactiveClass}`;
+            document.getElementById('tab-messages').className = `flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${!isOrders ? activeClass : inactiveClass}`;
+
+            if (!isOrders && !messagesLoaded) {
+                messagesLoaded = true;
+                loadUserMessages();
+            }
+        }
+
+        // ── User Messages ─────────────────────────────────────────────────
+        const API_USER_MESSAGES = '/PRIMEX-MATRESSES/backend/api/user-messages.php';
+
+        async function loadUserMessages() {
+            try {
+                const res    = await fetch(API_USER_MESSAGES);
+                const result = await res.json();
+                if (result.success) renderUserMessages(result.data.messages);
+                else document.getElementById('messages-container').innerHTML =
+                    `<div class="bg-white rounded-2xl p-10 text-center text-gray-400"><p>${escHtml(result.error)}</p></div>`;
+            } catch(e) {
+                document.getElementById('messages-container').innerHTML =
+                    '<div class="bg-white rounded-2xl p-10 text-center text-gray-400"><p>Failed to load messages.</p></div>';
+            }
+        }
+
+        function renderUserMessages(messages) {
+            const container = document.getElementById('messages-container');
+            if (!messages.length) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-sm p-16 text-center">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                            <i class="fas fa-envelope-open text-3xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No messages yet</h3>
+                        <p class="text-gray-400 mb-6">You haven't sent any messages to us.</p>
+                        <a href="contact.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity">
+                            <i class="fas fa-envelope"></i> Contact Us
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            // Show red dot on tab if any unread
+            const hasUnread = messages.some(m => m.status === 'unread');
+            document.getElementById('msg-unread-dot').classList.toggle('hidden', !hasUnread);
+
+            container.innerHTML = `<div class="space-y-4">${messages.map(m => {
+                const date       = new Date(m.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                const isUnread   = m.status === 'unread';
+                const hasReply   = !!m.admin_reply;
+                const replyDate  = m.replied_at ? new Date(m.replied_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
+
+                return `
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden ${isUnread && !hasReply ? 'border-l-4 border-primary-500' : ''}">
+                    <div class="p-5">
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <div>
+                                <p class="font-semibold text-gray-900 text-sm">${escHtml(m.subject)}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">${date}</p>
+                            </div>
+                            ${hasReply
+                                ? `<span class="flex-shrink-0 px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full"><i class="fas fa-check-circle mr-1"></i>Replied</span>`
+                                : `<span class="flex-shrink-0 px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full"><i class="fas fa-clock mr-1"></i>Pending reply</span>`}
+                        </div>
+                        <!-- Your message -->
+                        <div class="bg-gray-50 rounded-xl p-4 mb-3">
+                            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Your Message</p>
+                            <p class="text-sm text-gray-700 leading-relaxed">${escHtml(m.message)}</p>
+                        </div>
+                        <!-- Admin reply -->
+                        ${hasReply ? `
+                        <div class="bg-primary-50 border border-primary-100 rounded-xl p-4">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-6 h-6 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-headset text-white text-[10px]"></i>
+                                </div>
+                                <p class="text-xs font-semibold text-primary-700">Primex Support &bull; <span class="font-normal text-primary-500">${replyDate}</span></p>
+                            </div>
+                            <p class="text-sm text-primary-900 leading-relaxed">${escHtml(m.admin_reply)}</p>
+                        </div>` : `
+                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                            <i class="fas fa-info-circle"></i>
+                            <span>We'll reply to your registered email address. Check back here for updates.</span>
+                        </div>`}
+                    </div>
+                </div>`;
+            }).join('')}</div>`;
+        }
+
         // ── Init ─────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', async () => {
             const user = await checkAuth();
@@ -617,6 +740,11 @@
             } catch(e) {
                 document.getElementById('orders-container').innerHTML =
                     '<div class="bg-white rounded-2xl p-10 text-center text-gray-400"><p>Failed to load orders.</p></div>';
+            }
+
+            // Check if URL has ?tab=messages
+            if (new URLSearchParams(window.location.search).get('tab') === 'messages') {
+                switchTab('messages');
             }
         });
     </script>

@@ -13,17 +13,22 @@ $method = $_SERVER['REQUEST_METHOD'];
 // Create table if it doesn't exist (runs once)
 $db->query("
     CREATE TABLE IF NOT EXISTS contact_messages (
-        id         SERIAL PRIMARY KEY,
-        first_name VARCHAR(100) NOT NULL,
-        last_name  VARCHAR(100) NOT NULL,
-        email      VARCHAR(255) NOT NULL,
-        phone      VARCHAR(50),
-        subject    VARCHAR(150) NOT NULL,
-        message    TEXT         NOT NULL,
-        status     VARCHAR(20)  NOT NULL DEFAULT 'unread',
-        created_at TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
+        id          SERIAL PRIMARY KEY,
+        first_name  VARCHAR(100) NOT NULL,
+        last_name   VARCHAR(100) NOT NULL,
+        email       VARCHAR(255) NOT NULL,
+        phone       VARCHAR(50),
+        subject     VARCHAR(150) NOT NULL,
+        message     TEXT         NOT NULL,
+        status      VARCHAR(20)  NOT NULL DEFAULT 'unread',
+        admin_reply TEXT,
+        replied_at  TIMESTAMP,
+        created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
 ");
+// Add reply columns if upgrading from old schema
+try { $db->query("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS admin_reply TEXT"); } catch(Exception $e) {}
+try { $db->query("ALTER TABLE contact_messages ADD COLUMN IF NOT EXISTS replied_at TIMESTAMP"); } catch(Exception $e) {}
 
 try {
     switch ($method) {
@@ -118,7 +123,7 @@ try {
             ]);
             break;
 
-        // ── Admin: mark read / unread ────────────────────────────────────
+        // ── Admin: mark read / unread / reply ───────────────────────────
         case 'PUT':
             $auth->requireAdmin();
 
@@ -128,6 +133,60 @@ try {
 
             if (!$id)     errorResponse('Message ID is required');
             if (!$action) errorResponse('Action is required');
+
+            if ($action === 'reply') {
+                $replySubject = trim($data['reply_subject'] ?? '');
+                $replyMessage = trim($data['reply_message'] ?? '');
+
+                if (!$replySubject) errorResponse('Reply subject is required');
+                if (!$replyMessage) errorResponse('Reply message is required');
+
+                // Fetch original message
+                $msg = $db->query(
+                    "SELECT * FROM contact_messages WHERE id = :id",
+                    ['id' => $id]
+                )->fetch();
+                if (!$msg) errorResponse('Message not found', 404);
+
+                $toName    = $msg['first_name'] . ' ' . $msg['last_name'];
+                $toEmail   = $msg['email'];
+                $origMsg   = htmlspecialchars($msg['message']);
+
+                $headers  = "MIME-Version: 1.0\r\n";
+                $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+                $headers .= "From: Primex Mattress & Beddings <noreply@primex.com>\r\n";
+
+                $bodyHtml = "
+<!DOCTYPE html><html><body style='font-family:Arial,sans-serif;color:#333;max-width:600px;margin:0 auto;padding:20px;'>
+<div style='background:linear-gradient(135deg,#2563eb,#9333ea);padding:24px;border-radius:12px 12px 0 0;'>
+  <h2 style='color:#fff;margin:0;'>Primex Mattress &amp; Beddings</h2>
+</div>
+<div style='background:#fff;padding:24px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 12px 12px;'>
+  <p>Dear " . htmlspecialchars($toName) . ",</p>
+  <p>Thank you for contacting us. Here is our reply:</p>
+  <div style='background:#f9fafb;border-left:4px solid #2563eb;padding:16px;border-radius:0 8px 8px 0;margin:16px 0;'>
+    " . nl2br(htmlspecialchars($replyMessage)) . "
+  </div>
+  <hr style='border:none;border-top:1px solid #e5e7eb;margin:20px 0;'>
+  <p style='color:#6b7280;font-size:12px;'><strong>Your original message:</strong><br>" . $origMsg . "</p>
+  <p style='color:#6b7280;font-size:12px;margin-top:16px;'>Primex Mattress &amp; Beddings &bull; Customer Support</p>
+</div>
+</body></html>";
+
+                $mailSent = @mail($toEmail, $replySubject, $bodyHtml, $headers);
+
+                // Store reply and mark as read
+                $db->query(
+                    "UPDATE contact_messages SET admin_reply = :reply, replied_at = NOW(), status = 'read' WHERE id = :id",
+                    ['reply' => $replyMessage, 'id' => $id]
+                );
+
+                successResponse([
+                    'message'   => 'Reply sent successfully',
+                    'mail_sent' => $mailSent,
+                ]);
+                break;
+            }
 
             $newStatus = $action === 'read' ? 'read' : 'unread';
 
