@@ -88,8 +88,7 @@
 </head>
 <body class="font-sans text-gray-800 bg-gray-50">
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="../index.html" class="flex items-center space-x-2">
                     <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
@@ -160,8 +159,16 @@
     <section class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Mobile Filter Toggle -->
+                <div class="lg:hidden mb-4">
+                    <button onclick="toggleMobileFilters()" class="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-sliders-h"></i> Filters
+                        <i id="filter-chevron" class="fas fa-chevron-down text-xs ml-1 transition-transform duration-200"></i>
+                    </button>
+                </div>
+
                 <!-- Filters Sidebar -->
-                <aside class="lg:w-64 flex-shrink-0">
+                <aside id="filter-sidebar" class="lg:w-64 flex-shrink-0 hidden lg:block">
                     <div class="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="font-semibold text-lg">Filters</h3>
@@ -185,21 +192,6 @@
                             <h4 class="font-medium mb-4">Categories</h4>
                             <div class="space-y-3" id="category-filters">
                                 <!-- Categories loaded dynamically -->
-                            </div>
-                        </div>
-
-                        <!-- Price Range -->
-                        <div class="mb-8">
-                            <h4 class="font-medium mb-4">Price Range</h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="text-sm text-gray-600">Min: $<span id="min-price-display">0</span></label>
-                                    <input type="range" id="min-price" min="0" max="2000" value="0" class="range-slider mt-2">
-                                </div>
-                                <div>
-                                    <label class="text-sm text-gray-600">Max: $<span id="max-price-display">2000</span></label>
-                                    <input type="range" id="max-price" min="0" max="2000" value="2000" class="range-slider mt-2">
-                                </div>
                             </div>
                         </div>
 
@@ -277,8 +269,11 @@
                 <div>
                     <h3 class="font-semibold mb-4">Contact</h3>
                     <ul class="space-y-2 text-gray-400">
-                        <li><i class="fas fa-phone mr-2"></i> 1-800-PRIMEX</li>
-                        <li><i class="fas fa-envelope mr-2"></i> support@primex.com</li>
+                        <li><i class="fas fa-map-marker-alt mr-2 text-primary-400"></i> Langalanga, Nakuru, Kenya</li>
+                        <li><i class="fas fa-phone mr-2 text-primary-400"></i> 0115896001</li>
+                        <li><i class="fas fa-phone mr-2 text-primary-400"></i> 0768274937</li>
+                        <li><i class="fas fa-envelope mr-2 text-primary-400"></i> mattressgoodnight@gmail.com</li>
+                        <li><i class="fas fa-clock mr-2 text-green-400"></i> Open 24/7</li>
                     </ul>
                 </div>
             </div>
@@ -289,12 +284,24 @@
     </footer>
 
     <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 min-w-[220px]">
         <div class="flex items-center space-x-3">
-            <i class="fas fa-check-circle text-green-400"></i>
-            <span id="toast-message">Item added to cart</span>
+            <i id="toast-icon" class="fas fa-check-circle text-green-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">Item added to cart</span>
         </div>
     </div>
+
+    <!-- Scroll to Top -->
+    <button id="scroll-top-btn" aria-label="Scroll to top"
+        class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 text-white rounded-full shadow-xl flex items-center justify-center z-40 opacity-0 pointer-events-none transition-all duration-300 hover:bg-primary-700 hover:-translate-y-1">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/" target="_blank" aria-label="Chat on WhatsApp"
+        class="fixed bottom-6 left-6 w-14 h-14 bg-green-500 text-white rounded-full shadow-xl flex items-center justify-center z-40 hover:bg-green-600 transition-all duration-200 hover:scale-110">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
 
     <script src="../js/main.js"></script>
     <script>
@@ -302,8 +309,6 @@
         let currentFilters = {
             category: getUrlParam('category') || '',
             search: getUrlParam('search') || '',
-            min_price: 0,
-            max_price: 2000,
             sort: 'featured'
         };
 
@@ -318,29 +323,36 @@
             }, 300);
         }
 
+        // Mobile filter toggle
+        function toggleMobileFilters() {
+            const sidebar = document.getElementById('filter-sidebar');
+            const chevron = document.getElementById('filter-chevron');
+            sidebar.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
         // Load categories for filters
         async function loadCategories() {
             try {
                 const response = await fetch('/PRIMEX-MATRESSES/backend/api/categories.php');
                 const result = await response.json();
-                
+
                 if (result.success) {
                     const container = document.getElementById('category-filters');
-                    container.innerHTML = result.data.map(cat => `
-                        <label class="flex items-center space-x-3 cursor-pointer group">
-                            <input type="checkbox" value="${cat.slug}" 
-                                ${currentFilters.category === cat.slug ? 'checked' : ''}
-                                onchange="toggleCategory('${cat.slug}')"
-                                class="filter-checkbox hidden">
-                            <div class="w-5 h-5 border-2 border-gray-300 rounded flex items-center justify-center transition-colors group-hover:border-primary-400">
-                                <svg class="w-3 h-3 text-white hidden" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                </svg>
-                            </div>
-                            <span class="text-gray-700 group-hover:text-primary-600">${cat.name}</span>
-                            <span class="text-gray-400 text-sm">(${cat.product_count})</span>
-                        </label>
+                    const allBtn = `<button onclick="toggleCategory('')"
+                        class="category-pill w-full text-left px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-150
+                            ${!currentFilters.category ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-700 border-gray-200 hover:border-primary-400 hover:text-primary-600'}">
+                        All Products
+                    </button>`;
+                    const pills = result.data.map(cat => `
+                        <button onclick="toggleCategory('${cat.slug}')"
+                            class="category-pill w-full text-left px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-150
+                                ${currentFilters.category === cat.slug ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-700 border-gray-200 hover:border-primary-400 hover:text-primary-600'}">
+                            ${cat.name}
+                            <span class="ml-1 opacity-60">(${cat.product_count})</span>
+                        </button>
                     `).join('');
+                    container.innerHTML = allBtn + pills;
                 }
             } catch (error) {
                 console.error('Error loading categories:', error);
@@ -354,8 +366,6 @@
                 
                 if (currentFilters.category) url += `&category=${encodeURIComponent(currentFilters.category)}`;
                 if (currentFilters.search) url += `&search=${encodeURIComponent(currentFilters.search)}`;
-                if (currentFilters.min_price > 0) url += `&min_price=${currentFilters.min_price}`;
-                if (currentFilters.max_price < 2000) url += `&max_price=${currentFilters.max_price}`;
                 
                 const response = await fetch(url);
                 const result = await response.json();
@@ -385,52 +395,58 @@
                 return;
             }
             
-            container.innerHTML = products.map(product => `
-                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg card-hover group">
-                    <div class="relative overflow-hidden aspect-square">
-                        <img src="${product.main_image || 'https://via.placeholder.com/400'}" 
-                            alt="${product.name}" 
-                            class="w-full h-full object-cover">
-                        ${product.discount_price ? `
-                            <div class="absolute top-4 left-4 bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                Save KSh ${(product.price - product.discount_price).toFixed(0)}
-                            </div>
-                        ` : ''}
-                        ${product.is_featured ? `
-                            <div class="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                                Featured
-                            </div>
-                        ` : ''}
-                        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-3">
-                            <a href="product-detail.html?slug=${product.slug}" class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-900 hover:bg-primary-600 hover:text-white transition-colors">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <button onclick="addToCart(${product.id})" class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-900 hover:bg-primary-600 hover:text-white transition-colors">
-                                <i class="fas fa-shopping-cart"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="text-sm text-gray-500 mb-1">${product.category_name || 'Product'}</div>
-                        <a href="product-detail.html?slug=${product.slug}" class="block">
-                            <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-primary-600 transition-colors">${product.name}</h3>
+            container.innerHTML = products.map(product => {
+                const discPct = product.discount_price ? Math.round((1 - product.discount_price / product.price) * 100) : 0;
+                const price = parseFloat(product.discount_price || product.price);
+                const origPrice = parseFloat(product.price);
+                return `
+                <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 card-hover group">
+                    <div class="relative overflow-hidden" style="aspect-ratio:1">
+                        <a href="product-detail.html?slug=${product.slug}">
+                            <img src="${product.main_image || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=400&fit=crop'}"
+                                alt="${product.name}"
+                                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                         </a>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-2">
-                                ${product.discount_price ? `
-                                    <span class="text-lg font-bold text-primary-600">KSh ${parseFloat(product.discount_price).toFixed(2)}</span>
-                                    <span class="text-sm text-gray-400 line-through">KSh ${parseFloat(product.price).toFixed(2)}</span>
-                                ` : `
-                                    <span class="text-lg font-bold text-primary-600">KSh ${parseFloat(product.price).toFixed(2)}</span>
-                                `}
+                        ${discPct > 0 ? `<span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow">-${discPct}%</span>` : ''}
+                        ${(product.is_featured === true || product.is_featured === 't' || product.is_featured === '1') && !discPct ? `<span class="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-2 py-1 rounded-lg shadow">⭐ Featured</span>` : ''}
+                        <button class="absolute top-3 right-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center text-gray-300 hover:text-red-500 transition-all duration-200 hover:scale-110">
+                            <i class="fas fa-heart text-sm"></i>
+                        </button>
+                        <div class="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div class="flex gap-2">
+                                <a href="product-detail.html?slug=${product.slug}"
+                                    class="flex-1 bg-white text-gray-900 py-2 rounded-xl text-xs font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5">
+                                    <i class="fas fa-eye text-[10px]"></i> View
+                                </a>
+                                <button onclick="addToCart(${product.id})"
+                                    class="flex-1 bg-gray-900/90 backdrop-blur-sm text-white py-2 rounded-xl text-xs font-semibold hover:bg-primary-600 transition-colors flex items-center justify-center gap-1.5">
+                                    <i class="fas fa-shopping-bag text-[10px]"></i> Add to Cart
+                                </button>
                             </div>
-                            ${product.stock_quantity < 10 ? `
-                                <span class="text-xs text-red-500 font-medium">Only ${product.stock_quantity} left</span>
-                            ` : ''}
                         </div>
                     </div>
-                </div>
-            `).join('');
+                    <div class="p-4">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">${product.category_name || ''}</p>
+                        <a href="product-detail.html?slug=${product.slug}">
+                            <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-2 hover:text-primary-600 transition-colors line-clamp-2">${product.name}</h3>
+                        </a>
+                        <div class="flex items-center gap-0.5 mb-2.5">
+                            <i class="fas fa-star text-xs text-amber-400"></i>
+                            <i class="fas fa-star text-xs text-amber-400"></i>
+                            <i class="fas fa-star text-xs text-amber-400"></i>
+                            <i class="fas fa-star text-xs text-amber-400"></i>
+                            <i class="fas fa-star text-xs text-amber-400"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-base font-bold text-gray-900">KSh ${price.toLocaleString('en-KE',{minimumFractionDigits:0,maximumFractionDigits:0})}</span>
+                                ${discPct > 0 ? `<span class="text-xs text-gray-400 line-through">KSh ${origPrice.toLocaleString('en-KE',{minimumFractionDigits:0,maximumFractionDigits:0})}</span>` : ''}
+                            </div>
+                            ${product.stock_quantity < 10 ? `<span class="text-xs text-orange-500 font-semibold">${product.stock_quantity} left!</span>` : `<span class="text-xs text-green-500 font-medium">In Stock</span>`}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
         // Display pagination
@@ -483,14 +499,22 @@
 
         // Filter functions
         function toggleCategory(slug) {
-            currentFilters.category = currentFilters.category === slug ? '' : slug;
+            currentFilters.category = slug;
             currentPage = 1;
+            // Update pill active styles
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                const isActive = btn.getAttribute('onclick') === `toggleCategory('${slug}')` || (slug === '' && btn.getAttribute('onclick') === "toggleCategory('')");
+                btn.classList.toggle('bg-primary-600', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('border-primary-600', isActive);
+                btn.classList.toggle('bg-white', !isActive);
+                btn.classList.toggle('text-gray-700', !isActive);
+                btn.classList.toggle('border-gray-200', !isActive);
+            });
             loadProducts();
         }
 
         function applyFilters() {
-            currentFilters.min_price = parseInt(document.getElementById('min-price').value);
-            currentFilters.max_price = parseInt(document.getElementById('max-price').value);
             currentFilters.sort = document.getElementById('sort-select').value;
             currentPage = 1;
             loadProducts();
@@ -500,18 +524,15 @@
             currentFilters = {
                 category: '',
                 search: '',
-                min_price: 0,
-                max_price: 2000,
                 sort: 'featured'
             };
             currentPage = 1;
 
             // Reset UI
-            document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
-            document.getElementById('min-price').value = 0;
-            document.getElementById('max-price').value = 2000;
-            document.getElementById('min-price-display').textContent = '0';
-            document.getElementById('max-price-display').textContent = '2000';
+            document.querySelectorAll('.category-pill').forEach(btn => {
+                btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+            });
             document.getElementById('sort-select').value = 'featured';
             document.getElementById('sidebar-search').value = '';
 
@@ -527,17 +548,6 @@
         function toggleView(view) {
             // Implementation for list view
         }
-
-        // Price slider updates
-        document.getElementById('min-price')?.addEventListener('input', function() {
-            document.getElementById('min-price-display').textContent = this.value;
-            debounce(applyFilters, 300)();
-        });
-
-        document.getElementById('max-price')?.addEventListener('input', function() {
-            document.getElementById('max-price-display').textContent = this.value;
-            debounce(applyFilters, 300)();
-        });
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {

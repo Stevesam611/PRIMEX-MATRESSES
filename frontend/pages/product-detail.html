@@ -62,8 +62,7 @@
 </head>
 <body class="font-sans text-gray-800 bg-gray-50">
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="../index.html" class="flex items-center space-x-2">
                     <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
@@ -302,8 +301,11 @@
                 <div>
                     <h3 class="font-semibold mb-4">Contact</h3>
                     <ul class="space-y-2 text-gray-400">
-                        <li><i class="fas fa-phone mr-2"></i> 1-800-PRIMEX</li>
-                        <li><i class="fas fa-envelope mr-2"></i> support@primex.com</li>
+                        <li><i class="fas fa-map-marker-alt mr-2 text-primary-400"></i> Langalanga, Nakuru, Kenya</li>
+                        <li><i class="fas fa-phone mr-2 text-primary-400"></i> 0115896001</li>
+                        <li><i class="fas fa-phone mr-2 text-primary-400"></i> 0768274937</li>
+                        <li><i class="fas fa-envelope mr-2 text-primary-400"></i> mattressgoodnight@gmail.com</li>
+                        <li><i class="fas fa-clock mr-2 text-green-400"></i> Open 24/7</li>
                     </ul>
                 </div>
             </div>
@@ -314,10 +316,10 @@
     </footer>
 
     <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 min-w-[220px]">
         <div class="flex items-center space-x-3">
-            <i class="fas fa-check-circle text-green-400"></i>
-            <span id="toast-message">Item added to cart</span>
+            <i id="toast-icon" class="fas fa-check-circle text-green-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">Item added to cart</span>
         </div>
     </div>
 

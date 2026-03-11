@@ -122,8 +122,7 @@
 </head>
 <body class="font-sans text-gray-800 bg-gray-50">
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300" id="navbar">        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <!-- Logo -->
                 <a href="index.html" class="flex items-center space-x-2">
@@ -185,7 +184,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+    <section class="relative min-h-screen flex items-center pt-32 overflow-hidden">
         <!-- Background -->
         <div class="absolute inset-0 hero-gradient"></div>
         <div class="absolute inset-0 opacity-20">
@@ -259,6 +258,38 @@
                             <span class="font-bold text-lg">KSh 3999</span>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Bar -->
+    <section class="bg-gray-900 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap justify-center md:justify-between items-center gap-4">
+                <div class="flex items-center gap-2 text-white/80 text-sm">
+                    <i class="fas fa-truck text-accent-400"></i>
+                    <span>Free delivery over KSh 5,000</span>
+                </div>
+                <div class="hidden md:block w-px h-4 bg-white/20"></div>
+                <div class="flex items-center gap-2 text-white/80 text-sm">
+                    <i class="fas fa-shield-alt text-accent-400"></i>
+                    <span>10-Year Warranty</span>
+                </div>
+                <div class="hidden md:block w-px h-4 bg-white/20"></div>
+                <div class="flex items-center gap-2 text-white/80 text-sm">
+                    <i class="fas fa-undo text-accent-400"></i>
+                    <span>100-Night Sleep Trial</span>
+                </div>
+                <div class="hidden md:block w-px h-4 bg-white/20"></div>
+                <div class="flex items-center gap-2 text-white/80 text-sm">
+                    <i class="fas fa-lock text-accent-400"></i>
+                    <span>Secure Checkout</span>
+                </div>
+                <div class="hidden md:block w-px h-4 bg-white/20"></div>
+                <div class="flex items-center gap-2 text-white/80 text-sm">
+                    <i class="fas fa-headset text-accent-400"></i>
+                    <span>24/7 Customer Support</span>
                 </div>
             </div>
         </div>
@@ -449,7 +480,8 @@
                         </div>
                         <span class="text-2xl font-serif font-bold">Primex</span>
                     </div>
-                    <p class="text-gray-400 mb-6">Premium mattresses and bedding for your perfect sleep. Experience comfort like never before.</p>
+                    <p class="text-gray-400 mb-2">Quality, Durable, Affordable Products.</p>
+                    <p class="text-gray-400 mb-6">Premium mattresses and bedding for your perfect sleep.</p>
                     <div class="flex space-x-4">
                         <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
                             <i class="fab fa-facebook-f"></i>
@@ -493,41 +525,77 @@
                     <ul class="space-y-4">
                         <li class="flex items-start space-x-3">
                             <i class="fas fa-map-marker-alt text-primary-500 mt-1"></i>
-                            <span class="text-gray-400">123 Sleep Street, Dream City, DC 12345</span>
+                            <span class="text-gray-400">Langalanga, Nakuru, Kenya</span>
                         </li>
                         <li class="flex items-center space-x-3">
                             <i class="fas fa-phone text-primary-500"></i>
-                            <span class="text-gray-400">1-800-PRIMEX</span>
+                            <span class="text-gray-400">0115896001</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-phone text-primary-500"></i>
+                            <span class="text-gray-400">0768274937</span>
                         </li>
                         <li class="flex items-center space-x-3">
                             <i class="fas fa-envelope text-primary-500"></i>
-                            <span class="text-gray-400">support@primex.com</span>
+                            <span class="text-gray-400">mattressgoodnight@gmail.com</span>
                         </li>
                         <li class="flex items-center space-x-3">
                             <i class="fas fa-clock text-primary-500"></i>
-                            <span class="text-gray-400">Mon-Sat: 9AM - 8PM</span>
+                            <span class="text-gray-400">Open 24/7</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-500 text-sm">&copy; 2026 Primex Mattress & Beddings. All rights reserved.</p>
-                <div class="flex space-x-6 mt-4 md:mt-0">
-                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Privacy Policy</a>
-                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Terms of Service</a>
+            <!-- Payment Methods -->
+            <div class="border-t border-gray-800 mt-12 pt-8">
+                <div class="flex flex-wrap justify-center gap-3 mb-8">
+                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
+                        <i class="fas fa-credit-card text-blue-400"></i> Visa
+                    </div>
+                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
+                        <i class="fas fa-credit-card text-yellow-400"></i> Mastercard
+                    </div>
+                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
+                        <i class="fas fa-mobile-alt text-green-400"></i> M-Pesa
+                    </div>
+                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
+                        <i class="fas fa-university text-purple-400"></i> Bank Transfer
+                    </div>
+                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
+                        <i class="fas fa-money-bill-wave text-emerald-400"></i> Cash on Delivery
+                    </div>
+                </div>
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p class="text-gray-500 text-sm">&copy; 2026 Primex Mattress & Beddings. All rights reserved.</p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                        <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Terms of Service</a>
+                    </div>
                 </div>
             </div>
         </div>
     </footer>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <div id="toast" class="fixed bottom-24 right-6 bg-gray-900 text-white px-5 py-3.5 rounded-xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 z-50 min-w-[220px]">
         <div class="flex items-center space-x-3">
-            <i class="fas fa-check-circle text-green-400"></i>
-            <span id="toast-message">Item added to cart</span>
+            <i id="toast-icon" class="fas fa-check-circle text-green-400 text-lg"></i>
+            <span id="toast-message" class="text-sm font-medium">Item added to cart</span>
         </div>
     </div>
+
+    <!-- Scroll to Top -->
+    <button id="scroll-top-btn" aria-label="Scroll to top"
+        class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 text-white rounded-full shadow-xl flex items-center justify-center z-40 opacity-0 pointer-events-none transition-all duration-300 hover:bg-primary-700 hover:-translate-y-1">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/" target="_blank" aria-label="Chat on WhatsApp"
+        class="fixed bottom-6 left-6 w-14 h-14 bg-green-500 text-white rounded-full shadow-xl flex items-center justify-center z-40 hover:bg-green-600 transition-all duration-200 hover:scale-110">
+        <i class="fab fa-whatsapp text-2xl"></i>
+    </a>
 
     <script src="js/main.js"></script>
     <script>
@@ -539,36 +607,52 @@
                 
                 if (result.success && result.data.products) {
                     const container = document.getElementById('featured-products');
-                    container.innerHTML = result.data.products.map((product, index) => `
-                        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg card-hover section-fade" style="transition-delay: ${index * 0.1}s;">
-                            <div class="relative overflow-hidden aspect-square">
-                                <img src="${product.main_image || 'https://via.placeholder.com/400'}" 
-                                    alt="${product.name}" 
-                                    class="w-full h-full object-cover">
-                                ${product.discount_price ? `
-                                    <div class="absolute top-4 left-4 bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
-                                        Save $${(product.price - product.discount_price).toFixed(0)}
-                                    </div>
-                                ` : ''}
-                                <button onclick="addToCart(${product.id})" 
-                                    class="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all transform translate-y-16 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
-                                    <i class="fas fa-plus"></i>
+                    container.innerHTML = result.data.products.map((product, index) => {
+                        const discPct = product.discount_price ? Math.round((1 - product.discount_price / product.price) * 100) : 0;
+                        const price = parseFloat(product.discount_price || product.price);
+                        const origPrice = parseFloat(product.price);
+                        return `
+                        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 card-hover section-fade group cursor-pointer" style="transition-delay: ${index * 0.1}s;">
+                            <div class="relative overflow-hidden" style="aspect-ratio:1">
+                                <a href="pages/product-detail.html?slug=${product.slug}">
+                                    <img src="${product.main_image || 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=400&fit=crop'}"
+                                        alt="${product.name}"
+                                        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                </a>
+                                ${discPct > 0 ? `<span class="absolute top-3 left-3 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-lg shadow">-${discPct}%</span>` : ''}
+                                <button class="absolute top-3 right-3 w-9 h-9 bg-white rounded-full shadow-md flex items-center justify-center text-gray-300 hover:text-red-500 transition-all duration-200 hover:scale-110">
+                                    <i class="fas fa-heart text-sm"></i>
                                 </button>
-                            </div>
-                            <div class="p-6">
-                                <div class="text-sm text-gray-500 mb-1">${product.category_name || 'Product'}</div>
-                                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${product.name}</h3>
-                                <div class="flex items-center space-x-2">
-                                    ${product.discount_price ? `
-                                        <span class="text-lg font-bold text-primary-600">KSh ${parseFloat(product.discount_price).toFixed(2)}</span>
-                                        <span class="text-sm text-gray-400 line-through">KSh ${parseFloat(product.price).toFixed(2)}</span>
-                                    ` : `
-                                        <span class="text-lg font-bold text-primary-600">KSh ${parseFloat(product.price).toFixed(2)}</span>
-                                    `}
+                                <div class="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                                    <button onclick="addToCart(${product.id})"
+                                        class="w-full bg-gray-900/90 backdrop-blur-sm text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-primary-600 transition-colors flex items-center justify-center gap-2">
+                                        <i class="fas fa-shopping-bag text-xs"></i> Add to Cart
+                                    </button>
                                 </div>
                             </div>
-                        </div>
-                    `).join('');
+                            <div class="p-5">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider mb-1.5">${product.category_name || ''}</p>
+                                <a href="pages/product-detail.html?slug=${product.slug}">
+                                    <h3 class="font-semibold text-gray-900 text-sm leading-snug mb-2 hover:text-primary-600 transition-colors line-clamp-2">${product.name}</h3>
+                                </a>
+                                <div class="flex items-center gap-0.5 mb-3">
+                                    <i class="fas fa-star text-xs text-amber-400"></i>
+                                    <i class="fas fa-star text-xs text-amber-400"></i>
+                                    <i class="fas fa-star text-xs text-amber-400"></i>
+                                    <i class="fas fa-star text-xs text-amber-400"></i>
+                                    <i class="fas fa-star text-xs text-amber-400"></i>
+                                    <span class="text-xs text-gray-400 ml-1.5">5.0</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="text-base font-bold text-gray-900">KSh ${price.toLocaleString('en-KE', {minimumFractionDigits:0,maximumFractionDigits:0})}</span>
+                                        ${discPct > 0 ? `<span class="text-xs text-gray-400 line-through">KSh ${origPrice.toLocaleString('en-KE', {minimumFractionDigits:0,maximumFractionDigits:0})}</span>` : ''}
+                                    </div>
+                                    ${product.stock_quantity < 10 ? `<span class="text-xs text-orange-500 font-semibold">${product.stock_quantity} left!</span>` : `<span class="text-xs text-green-500 font-medium flex items-center gap-1"><i class="fas fa-circle text-[6px]"></i>In Stock</span>`}
+                                </div>
+                            </div>
+                        </div>`;
+                    }).join('');
                 }
             } catch (error) {
                 console.error('Error loading featured products:', error);
@@ -603,18 +687,20 @@
 
             const container = document.getElementById('testimonials');
             container.innerHTML = testimonials.map((t, index) => `
-                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 section-fade" style="transition-delay: ${index * 0.15}s;">
-                    <div class="flex items-center space-x-1 mb-4">
+                <div class="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-8 section-fade relative" style="transition-delay: ${index * 0.15}s;">
+                    <i class="fas fa-quote-left text-4xl text-accent-400/30 absolute top-6 left-6"></i>
+                    <div class="flex items-center space-x-1 mb-4 relative z-10">
                         ${Array(5).fill(0).map((_, i) => `
-                            <i class="fas fa-star ${i < t.rating ? 'text-accent-400' : 'text-gray-400'}"></i>
+                            <i class="fas fa-star ${i < t.rating ? 'text-accent-400' : 'text-white/20'} text-sm"></i>
                         `).join('')}
+                        <span class="text-accent-300 text-sm font-semibold ml-2">${t.rating}.0</span>
                     </div>
-                    <p class="text-white/90 mb-6 text-lg leading-relaxed">"${t.text}"</p>
-                    <div class="flex items-center space-x-4">
-                        <img src="${t.image}" alt="${t.name}" class="w-12 h-12 rounded-full object-cover">
+                    <p class="text-white/85 mb-6 text-base leading-relaxed relative z-10">${t.text}</p>
+                    <div class="flex items-center space-x-3 pt-4 border-t border-white/10">
+                        <img src="${t.image}" alt="${t.name}" class="w-11 h-11 rounded-full object-cover ring-2 ring-accent-400/50">
                         <div>
-                            <div class="font-semibold text-white">${t.name}</div>
-                            <div class="text-white/60 text-sm">${t.role}</div>
+                            <div class="font-semibold text-white text-sm">${t.name}</div>
+                            <div class="text-white/50 text-xs flex items-center gap-1 mt-0.5"><i class="fas fa-check-circle text-green-400"></i> ${t.role}</div>
                         </div>
                     </div>
                 </div>

@@ -93,14 +93,23 @@ async function updateCartCount(count) {
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toast-message');
-    
+    const toastIcon = document.getElementById('toast-icon');
+
     if (toast && toastMessage) {
         toastMessage.textContent = message;
+        if (toastIcon) {
+            toastIcon.className = type === 'error'
+                ? 'fas fa-exclamation-circle text-red-400 text-lg'
+                : 'fas fa-check-circle text-green-400 text-lg';
+        }
+        toast.className = toast.className.replace(/bg-\w+-\d+/g, '');
+        toast.classList.add(type === 'error' ? 'bg-red-900' : 'bg-gray-900');
         toast.classList.remove('translate-y-20', 'opacity-0');
-        
-        setTimeout(() => {
+
+        clearTimeout(window._toastTimer);
+        window._toastTimer = setTimeout(() => {
             toast.classList.add('translate-y-20', 'opacity-0');
-        }, 3000);
+        }, 3500);
     }
 }
 
@@ -195,10 +204,49 @@ function debounce(func, wait) {
     };
 }
 
+// Scroll to Top
+function initScrollToTop() {
+    const btn = document.getElementById('scroll-top-btn');
+    if (!btn) return;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 400) {
+            btn.classList.remove('opacity-0', 'pointer-events-none');
+            btn.classList.add('opacity-100');
+        } else {
+            btn.classList.add('opacity-0', 'pointer-events-none');
+            btn.classList.remove('opacity-100');
+        }
+    });
+    btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
+
+// Dismiss announcement bar
+function dismissPromo() {
+    const bar = document.getElementById('promo-bar');
+    if (!bar) return;
+    bar.style.transition = 'max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease';
+    bar.style.maxHeight = bar.scrollHeight + 'px';
+    bar.style.overflow = 'hidden';
+    requestAnimationFrame(() => {
+        bar.style.maxHeight = '0';
+        bar.style.paddingTop = '0';
+        bar.style.paddingBottom = '0';
+        bar.style.opacity = '0';
+    });
+    sessionStorage.setItem('promoDismissed', '1');
+}
+
 // Initialize on DOM Ready
 document.addEventListener('DOMContentLoaded', () => {
     initScrollAnimations();
     initNavbarScroll();
+    initScrollToTop();
+
+    // Restore promo bar dismissal
+    if (sessionStorage.getItem('promoDismissed')) {
+        const bar = document.getElementById('promo-bar');
+        if (bar) bar.remove();
+    }
     
     // Search input enter key
     const searchInput = document.getElementById('search-input');
