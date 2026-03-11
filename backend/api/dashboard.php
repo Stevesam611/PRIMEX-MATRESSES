@@ -32,12 +32,12 @@ try {
             $stats['total_customers'] = $stmt->fetch()['total'];
             
             // Sales summary
-            $stmt = $db->query("SELECT 
+            $stmt = $db->query("SELECT
                 COALESCE(SUM(total_amount), 0) as total_sales,
                 COALESCE(SUM(CASE WHEN created_at >= CURRENT_DATE THEN total_amount END), 0) as today_sales,
                 COALESCE(SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '7 days' THEN total_amount END), 0) as week_sales,
                 COALESCE(SUM(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '30 days' THEN total_amount END), 0) as month_sales
-                FROM orders WHERE status != 'cancelled'");
+                FROM orders WHERE payment_status = 'paid'");
             $sales = $stmt->fetch();
             $stats['sales'] = $sales;
             
@@ -72,7 +72,7 @@ try {
                 COALESCE(SUM(total_amount), 0) as revenue
                 FROM orders
                 WHERE EXTRACT(YEAR FROM created_at) = :year
-                AND status != 'cancelled'
+                AND payment_status = 'paid'
                 GROUP BY DATE_TRUNC('month', created_at)
                 ORDER BY month ASC",
                 ['year' => $year]
@@ -88,7 +88,7 @@ try {
                 FROM order_items oi
                 JOIN products p ON oi.product_id = p.id
                 JOIN orders o ON oi.order_id = o.id
-                WHERE o.status != 'cancelled'
+                WHERE o.payment_status = 'paid'
                 GROUP BY p.id, p.name, p.main_image
                 ORDER BY total_sold DESC
                 LIMIT 5");
