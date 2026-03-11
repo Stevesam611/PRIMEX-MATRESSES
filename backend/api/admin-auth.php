@@ -59,7 +59,48 @@ try {
                         errorResponse($result['message']);
                     }
                     break;
-                    
+
+                case 'forgot_password_verify':
+                    $email = trim($data['email'] ?? '');
+                    if (!$email) { errorResponse('Email is required'); }
+
+                    $db = Database::getInstance();
+                    $stmt = $db->query(
+                        "SELECT id FROM admins WHERE email = :email AND is_active = TRUE",
+                        ['email' => $email]
+                    );
+                    $admin = $stmt->fetch();
+
+                    if (!$admin) { errorResponse('No admin account found with that email'); }
+
+                    // Store verified email + expiry in session (5 min window)
+                    $_SESSION['pwd_reset_email']   = $email;
+                    $_SESSION['pwd_reset_expires'] = time() + 300;
+
+                    successResponse(null, 'Email verified');
+                    break;
+
+                case 'reset_password':
+                    $newPassword = $data['new_password'] ?? '';
+                    $confirm     = $data['confirm_password'] ?? '';
+
+                    if (empty($_SESSION['pwd_reset_email']) || time() > ($_SESSION['pwd_reset_expires'] ?? 0)) {
+                        errorResponse('Reset session expired. Please start over.');
+                    }
+                    if (strlen($newPassword) < 6) { errorResponse('Password must be at least 6 characters'); }
+                    if ($newPassword !== $confirm)  { errorResponse('Passwords do not match'); }
+
+                    $db    = Database::getInstance();
+                    $hash  = password_hash($newPassword, PASSWORD_DEFAULT);
+                    $db->query(
+                        "UPDATE admins SET password_hash = :hash WHERE email = :email",
+                        ['hash' => $hash, 'email' => $_SESSION['pwd_reset_email']]
+                    );
+
+                    unset($_SESSION['pwd_reset_email'], $_SESSION['pwd_reset_expires']);
+                    successResponse(null, 'Password reset successfully');
+                    break;
+
                 default:
                     errorResponse('Invalid action');
             }

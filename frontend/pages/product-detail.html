@@ -169,7 +169,7 @@
                     <div class="flex space-x-8">
                         <button onclick="switchTab('description')" id="tab-description" class="pb-4 text-primary-600 border-b-2 border-primary-600 font-medium">Description</button>
                         <button onclick="switchTab('specifications')" id="tab-specifications" class="pb-4 text-gray-500 hover:text-gray-700 font-medium">Specifications</button>
-                        <button onclick="switchTab('reviews')" id="tab-reviews" class="pb-4 text-gray-500 hover:text-gray-700 font-medium">Reviews</button>
+                        <button onclick="switchTab('reviews')" id="tab-reviews" class="pb-4 text-gray-500 hover:text-gray-700 font-medium">Reviews <span id="tab-review-count" class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full ml-1"></span></button>
                     </div>
                 </div>
 
@@ -185,8 +185,74 @@
                         </div>
                     </div>
                     <div id="content-reviews" class="tab-content">
-                        <div id="reviews-content">
-                            <!-- Reviews loaded dynamically -->
+                        <div class="lg:grid lg:grid-cols-3 lg:gap-12">
+                            <!-- Reviews list (left 2/3) -->
+                            <div class="lg:col-span-2">
+                                <!-- Rating summary -->
+                                <div id="rating-summary" class="mb-8"></div>
+                                <!-- Reviews list -->
+                                <div id="reviews-list"></div>
+                            </div>
+                            <!-- Write a review (right 1/3) -->
+                            <div class="mt-10 lg:mt-0">
+                                <div class="bg-gray-50 rounded-2xl p-6 sticky top-24">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-5">Write a Review</h3>
+
+                                    <!-- Success message (hidden by default) -->
+                                    <div id="review-success" class="hidden mb-4 p-4 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+                                        <i class="fas fa-check-circle mr-2"></i>Thank you! Your review has been submitted and is pending approval.
+                                    </div>
+
+                                    <form id="review-form" onsubmit="submitReview(event)">
+                                        <!-- Star rating picker -->
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating <span class="text-red-500">*</span></label>
+                                            <div class="flex space-x-1" id="star-picker">
+                                                <i class="fas fa-star text-2xl cursor-pointer text-gray-300 transition-colors" data-value="1" onclick="setRating(1)" onmouseover="hoverRating(1)" onmouseout="resetHover()"></i>
+                                                <i class="fas fa-star text-2xl cursor-pointer text-gray-300 transition-colors" data-value="2" onclick="setRating(2)" onmouseover="hoverRating(2)" onmouseout="resetHover()"></i>
+                                                <i class="fas fa-star text-2xl cursor-pointer text-gray-300 transition-colors" data-value="3" onclick="setRating(3)" onmouseover="hoverRating(3)" onmouseout="resetHover()"></i>
+                                                <i class="fas fa-star text-2xl cursor-pointer text-gray-300 transition-colors" data-value="4" onclick="setRating(4)" onmouseover="hoverRating(4)" onmouseout="resetHover()"></i>
+                                                <i class="fas fa-star text-2xl cursor-pointer text-gray-300 transition-colors" data-value="5" onclick="setRating(5)" onmouseover="hoverRating(5)" onmouseout="resetHover()"></i>
+                                            </div>
+                                            <input type="hidden" id="review-rating" value="0">
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name <span class="text-red-500">*</span></label>
+                                            <input type="text" id="review-name" placeholder="John Doe" required
+                                                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                                            <input type="email" id="review-email" placeholder="john@example.com" required
+                                                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                        </div>
+
+                                        <div class="mb-4">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Review Title</label>
+                                            <input type="text" id="review-title" placeholder="Summarize your experience"
+                                                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                        </div>
+
+                                        <div class="mb-5">
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Review <span class="text-red-500">*</span></label>
+                                            <textarea id="review-text" rows="4" placeholder="Share your experience with this product..." required
+                                                class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"></textarea>
+                                        </div>
+
+                                        <div id="review-error" class="hidden mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                                            <i class="fas fa-exclamation-circle mr-1"></i><span id="review-error-text"></span>
+                                        </div>
+
+                                        <button type="submit" id="review-submit-btn"
+                                            class="w-full btn-primary text-white py-3 rounded-lg font-semibold text-sm flex items-center justify-center space-x-2">
+                                            <i class="fas fa-paper-plane"></i>
+                                            <span>Submit Review</span>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -363,33 +429,9 @@
             ` : '<p class="text-gray-500">No specifications available.</p>';
 
             // Reviews
-            const reviews = product.reviews || [];
-            document.getElementById('reviews-content').innerHTML = reviews.length > 0 ? `
-                <div class="space-y-6">
-                    ${reviews.map(review => `
-                        <div class="border-b border-gray-100 pb-6">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
-                                        <span class="text-primary-600 font-semibold">${review.customer_name.charAt(0)}</span>
-                                    </div>
-                                    <div>
-                                        <div class="font-semibold">${review.customer_name}</div>
-                                        <div class="text-sm text-gray-500">${new Date(review.created_at).toLocaleDateString()}</div>
-                                    </div>
-                                </div>
-                                <div class="flex text-accent-400">
-                                    ${Array(5).fill(0).map((_, i) => `
-                                        <i class="fas fa-star ${i < review.rating ? '' : 'text-gray-300'}"></i>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            <h4 class="font-semibold mb-2">${review.title || ''}</h4>
-                            <p class="text-gray-600">${review.review}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : '<p class="text-gray-500">No reviews yet.</p>';
+            const reviewCount = parseInt(product.review_count) || 0;
+            if (reviewCount > 0) document.getElementById('tab-review-count').textContent = reviewCount;
+            renderReviews(product.reviews || [], product.average_rating, reviewCount);
         }
 
         // Change main image
@@ -460,6 +502,141 @@
                 }
             } catch (error) {
                 console.error('Error loading related products:', error);
+            }
+        }
+
+        // ── Reviews ─────────────────────────────────────────
+        let selectedRating = 0;
+
+        function stars(count, total = 5, size = 'text-sm') {
+            return Array.from({length: total}, (_, i) =>
+                `<i class="fas fa-star ${size} ${i < count ? 'text-accent-400' : 'text-gray-200'}"></i>`
+            ).join('');
+        }
+
+        function renderReviews(reviews, avgRating, reviewCount) {
+            // Rating summary
+            const avg = parseFloat(avgRating) || 0;
+            const count = parseInt(reviewCount) || 0;
+            const ratingCounts = [0, 0, 0, 0, 0];
+            reviews.forEach(r => { if (r.rating >= 1 && r.rating <= 5) ratingCounts[r.rating - 1]++; });
+
+            document.getElementById('rating-summary').innerHTML = count > 0 ? `
+                <div class="flex items-center space-x-8 p-6 bg-gray-50 rounded-2xl mb-6">
+                    <div class="text-center flex-shrink-0">
+                        <div class="text-5xl font-bold text-gray-900">${avg.toFixed(1)}</div>
+                        <div class="flex justify-center mt-1">${stars(Math.round(avg), 5, 'text-base')}</div>
+                        <div class="text-sm text-gray-500 mt-1">${count} review${count !== 1 ? 's' : ''}</div>
+                    </div>
+                    <div class="flex-1 space-y-1.5">
+                        ${[5,4,3,2,1].map(star => {
+                            const cnt = ratingCounts[star - 1];
+                            const pct = count > 0 ? Math.round((cnt / count) * 100) : 0;
+                            return `<div class="flex items-center space-x-3 text-sm">
+                                <span class="w-3 text-gray-500">${star}</span>
+                                <i class="fas fa-star text-accent-400 text-xs"></i>
+                                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div class="bg-accent-400 h-2 rounded-full" style="width:${pct}%"></div>
+                                </div>
+                                <span class="w-6 text-gray-500">${cnt}</span>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+            ` : '';
+
+            // Reviews list
+            document.getElementById('reviews-list').innerHTML = reviews.length > 0 ? `
+                <div class="space-y-6">
+                    ${reviews.map(r => `
+                        <div class="border-b border-gray-100 pb-6 last:border-0">
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <span class="text-primary-600 font-semibold">${(r.customer_name || 'A').charAt(0).toUpperCase()}</span>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900">${r.customer_name || 'Anonymous'}</div>
+                                        <div class="text-xs text-gray-400">${new Date(r.created_at).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})}</div>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-0.5">${stars(parseInt(r.rating))}</div>
+                            </div>
+                            ${r.title ? `<h4 class="font-semibold text-gray-800 mb-1">${r.title}</h4>` : ''}
+                            <p class="text-gray-600 text-sm leading-relaxed">${r.review}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : `<p class="text-gray-500 py-4">No reviews yet. Be the first to review this product!</p>`;
+        }
+
+        function setRating(value) {
+            selectedRating = value;
+            document.getElementById('review-rating').value = value;
+            updateStarPicker(value);
+        }
+
+        function hoverRating(value) {
+            updateStarPicker(value);
+        }
+
+        function resetHover() {
+            updateStarPicker(selectedRating);
+        }
+
+        function updateStarPicker(highlighted) {
+            document.querySelectorAll('#star-picker i').forEach(star => {
+                const v = parseInt(star.dataset.value);
+                star.classList.toggle('text-accent-400', v <= highlighted);
+                star.classList.toggle('text-gray-300', v > highlighted);
+            });
+        }
+
+        async function submitReview(event) {
+            event.preventDefault();
+            const errDiv = document.getElementById('review-error');
+            const errText = document.getElementById('review-error-text');
+            errDiv.classList.add('hidden');
+
+            const rating = parseInt(document.getElementById('review-rating').value);
+            if (!rating) {
+                errText.textContent = 'Please select a star rating.';
+                errDiv.classList.remove('hidden');
+                return;
+            }
+
+            const btn = document.getElementById('review-submit-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+
+            try {
+                const res = await fetch('/PRIMEX-MATRESSES/backend/api/reviews.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_id:     productId,
+                        customer_name:  document.getElementById('review-name').value.trim(),
+                        customer_email: document.getElementById('review-email').value.trim(),
+                        rating,
+                        title:  document.getElementById('review-title').value.trim(),
+                        review: document.getElementById('review-text').value.trim(),
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    document.getElementById('review-form').classList.add('hidden');
+                    document.getElementById('review-success').classList.remove('hidden');
+                } else {
+                    errText.textContent = result.error || 'Failed to submit review.';
+                    errDiv.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Submit Review</span>';
+                }
+            } catch(e) {
+                errText.textContent = 'An error occurred. Please try again.';
+                errDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Submit Review</span>';
             }
         }
 

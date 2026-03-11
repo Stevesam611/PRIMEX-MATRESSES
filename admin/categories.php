@@ -16,6 +16,9 @@ $auth->requireAdmin();
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
+        (function(){if(localStorage.getItem('adminDark')==='1')document.documentElement.classList.add('dark');})();
+    </script>
+    <script>
         tailwind.config = {
             theme: {
                 extend: {
@@ -30,6 +33,30 @@ $auth->requireAdmin();
     <style>
         .sidebar-link { transition: all 0.3s ease; }
         .sidebar-link:hover, .sidebar-link.active { background: linear-gradient(90deg, rgba(37, 99, 235, 0.1) 0%, transparent 100%); border-right: 3px solid #2563eb; }
+        html.dark body{background-color:#0f172a}
+        html.dark .bg-white{background-color:#1e293b!important}
+        html.dark .bg-gray-100{background-color:#0f172a!important}
+        html.dark .bg-gray-50{background-color:#162032!important}
+        html.dark aside{background-color:#1e293b!important}
+        html.dark .text-gray-900{color:#f8fafc!important}
+        html.dark .text-gray-800{color:#f1f5f9!important}
+        html.dark .text-gray-700{color:#e2e8f0!important}
+        html.dark .text-gray-600{color:#cbd5e1!important}
+        html.dark .text-gray-500{color:#94a3b8!important}
+        html.dark .text-gray-400{color:#64748b!important}
+        html.dark .border-gray-100,html.dark .border-gray-200{border-color:#334155!important}
+        html.dark .border-b,html.dark .border-t{border-color:#334155!important}
+        html.dark .divide-gray-100>*+*,html.dark .divide-gray-50>*+*{border-color:#334155!important}
+        html.dark input:not([type=checkbox]):not([type=radio]),html.dark textarea,html.dark select{background-color:#1e293b!important;border-color:#334155!important;color:#e2e8f0!important}
+        html.dark input::placeholder,html.dark textarea::placeholder{color:#64748b!important}
+        html.dark .hover\:bg-gray-50:hover{background-color:#162032!important}
+        html.dark .hover\:bg-gray-100:hover{background-color:#334155!important}
+        html.dark .hover\:bg-red-50:hover{background-color:#2d1a1a!important}
+        html.dark .bg-red-50{background-color:#2d1a1a!important}
+        html.dark .bg-green-50{background-color:#1a2d1a!important}
+        html.dark .bg-yellow-50{background-color:#2d2a1a!important}
+        html.dark .shadow-sm{box-shadow:0 1px 3px rgba(0,0,0,.5)!important}
+        html.dark .shadow-lg,html.dark .shadow-2xl{box-shadow:0 4px 24px rgba(0,0,0,.6)!important}
     </style>
 </head>
 <body class="font-sans bg-gray-100">
@@ -81,9 +108,14 @@ $auth->requireAdmin();
             <header class="bg-white shadow-sm sticky top-0 z-10">
                 <div class="flex items-center justify-between px-8 py-4">
                     <h1 class="text-2xl font-bold text-gray-900">Categories</h1>
-                    <button onclick="openModal()" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center">
-                        <i class="fas fa-plus mr-2"></i>Add Category
-                    </button>
+                    <div class="flex items-center space-x-3">
+                        <button onclick="toggleDarkMode()" id="dark-toggle" title="Toggle dark mode" class="p-2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i id="dark-icon" class="fas fa-moon text-xl"></i>
+                        </button>
+                        <button onclick="openModal()" class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors flex items-center">
+                            <i class="fas fa-plus mr-2"></i>Add Category
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -270,6 +302,13 @@ $auth->requireAdmin();
             }
         }
 
+        // Dark mode
+        function toggleDarkMode() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('adminDark', isDark ? '1' : '0');
+            document.getElementById('dark-icon').className = isDark ? 'fas fa-sun text-xl' : 'fas fa-moon text-xl';
+        }
+
         // Logout
         async function logout() {
             await fetch('../backend/api/admin-auth.php', {
@@ -281,7 +320,12 @@ $auth->requireAdmin();
         }
 
         // Initialize
-        document.addEventListener('DOMContentLoaded', loadCategories);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                document.getElementById('dark-icon').className = 'fas fa-sun text-xl';
+            }
+            loadCategories();
+        });
     </script>
 </body>
 </html>
