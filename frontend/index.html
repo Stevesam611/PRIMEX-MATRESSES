@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primex Mattress & Beddings - Premium Sleep Solutions</title>
+    <meta name="description" content="Discover premium mattresses, pillows, bedding sets, and bed frames at Primex. Experience the perfect sleep with our quality products.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                        secondary: {
+                            50: '#faf5ff',
+                            100: '#f3e8ff',
+                            200: '#e9d5ff',
+                            300: '#d8b4fe',
+                            400: '#c084fc',
+                            500: '#a855f7',
+                            600: '#9333ea',
+                            700: '#7c3aed',
+                            800: '#6b21a8',
+                            900: '#581c87',
+                        },
+                        accent: {
+                            50: '#fefce8',
+                            100: '#fef9c3',
+                            200: '#fef08a',
+                            300: '#fde047',
+                            400: '#facc15',
+                            500: '#eab308',
+                            600: '#ca8a04',
+                            700: '#a16207',
+                            800: '#854d0e',
+                            900: '#713f12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 50%, #1e40af 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #6b21a8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, #eab308 0%, #facc15 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-accent:hover {
+            background: linear-gradient(135deg, #ca8a04 0%, #eab308 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(234, 179, 8, 0.3);
+        }
+        .section-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        .section-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .product-card img {
+            transition: transform 0.5s ease;
+        }
+        .product-card:hover img {
+            transform: scale(1.05);
+        }
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #eab308, #facc15);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bed text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-serif font-bold bg-gradient-to-r from-primary-700 to-secondary-700 bg-clip-text text-transparent">Primex</span>
+                </a>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium transition-colors">Home</a>
+                    <a href="pages/products.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium transition-colors">Products</a>
+                    <a href="pages/products.html?category=mattresses" class="nav-link text-gray-700 hover:text-primary-600 font-medium transition-colors">Mattresses</a>
+                    <a href="pages/products.html?category=bedding-sets" class="nav-link text-gray-700 hover:text-primary-600 font-medium transition-colors">Bedding</a>
+                    <a href="pages/contact.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium transition-colors">Contact</a>
+                </div>
+
+                <!-- Right Side Icons -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="toggleSearch()" class="p-2 text-gray-600 hover:text-primary-600 transition-colors">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                    <a href="pages/cart.html" class="p-2 text-gray-600 hover:text-primary-600 transition-colors relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-accent-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+                    </a>
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-600 hover:text-primary-600 transition-colors">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div id="search-bar" class="hidden bg-white border-t border-gray-100 py-4">
+            <div class="max-w-3xl mx-auto px-4">
+                <div class="relative">
+                    <input type="text" id="search-input" placeholder="Search for mattresses, pillows, bedding..." 
+                        class="w-full px-6 py-3 pl-14 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all">
+                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <button onclick="performSearch()" class="absolute right-2 top-1/2 -translate-y-1/2 px-6 py-1.5 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+            <div class="px-4 py-4 space-y-3">
+                <a href="index.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Home</a>
+                <a href="pages/products.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Products</a>
+                <a href="pages/products.html?category=mattresses" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Mattresses</a>
+                <a href="pages/products.html?category=bedding-sets" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Bedding</a>
+                <a href="pages/contact.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <!-- Background -->
+        <div class="absolute inset-0 hero-gradient"></div>
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-accent-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-20 right-10 w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Hero Content -->
+                <div class="text-white space-y-8">
+                    <div class="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full">
+                        <span class="w-2 h-2 bg-accent-400 rounded-full mr-2 animate-pulse"></span>
+                        <span class="text-sm font-medium">New Collection 2024</span>
+                    </div>
+                    <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif font-bold leading-tight">
+                        Sleep Better,
+                        <span class="block text-accent-300">Live Better</span>
+                    </h1>
+                    <p class="text-xl text-white/90 max-w-lg">
+                        Discover premium mattresses and bedding crafted for your perfect night's sleep. Experience comfort like never before.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="pages/products.html" class="btn-accent px-8 py-4 text-gray-900 font-semibold rounded-full inline-flex items-center">
+                            Shop Now
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="pages/products.html?category=mattresses" class="px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-full hover:bg-white/20 transition-all inline-flex items-center">
+                            View Mattresses
+                        </a>
+                    </div>
+                    <div class="flex items-center space-x-8 pt-4">
+                        <div>
+                            <div class="text-3xl font-bold text-accent-300">50K+</div>
+                            <div class="text-white/70 text-sm">Happy Customers</div>
+                        </div>
+                        <div class="w-px h-12 bg-white/20"></div>
+                        <div>
+                            <div class="text-3xl font-bold text-accent-300">15+</div>
+                            <div class="text-white/70 text-sm">Years Experience</div>
+                        </div>
+                        <div class="w-px h-12 bg-white/20"></div>
+                        <div>
+                            <div class="text-3xl font-bold text-accent-300">4.9</div>
+                            <div class="text-white/70 text-sm">Customer Rating</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Image -->
+                <div class="relative">
+                    <div class="relative z-10">
+                        <img src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800&h=600&fit=crop" 
+                            alt="Premium Mattress" 
+                            class="rounded-3xl shadow-2xl w-full object-cover">
+                        <!-- Floating Card -->
+                        <div class="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-xl">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-star text-accent-500"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900">Best Seller</div>
+                                    <div class="text-sm text-gray-500">Memory Foam Mattress</div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Price Tag -->
+                        <div class="absolute -top-4 -right-4 bg-accent-500 text-white rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-xl">
+                            <span class="text-xs">Starting at</span>
+                            <span class="font-bold text-lg">$699</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 section-fade">
+                <span class="text-primary-600 font-semibold text-sm uppercase tracking-wider">Our Collection</span>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mt-2">Shop by Category</h2>
+                <p class="text-gray-600 mt-4 max-w-2xl mx-auto">Explore our wide range of premium sleep products designed for your comfort</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                <!-- Category Cards -->
+                <a href="pages/products.html?category=mattresses" class="group section-fade" style="transition-delay: 0.1s;">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square">
+                        <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=400&fit=crop" 
+                            alt="Mattresses" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-semibold text-lg">Mattresses</h3>
+                            <p class="text-white/80 text-sm">Premium Comfort</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/products.html?category=pillows" class="group section-fade" style="transition-delay: 0.2s;">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square">
+                        <img src="https://images.unsplash.com/photo-1629949009765-40fc74c9ec21?w=400&h=400&fit=crop" 
+                            alt="Pillows" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-semibold text-lg">Pillows</h3>
+                            <p class="text-white/80 text-sm">Perfect Support</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/products.html?category=bedding-sets" class="group section-fade" style="transition-delay: 0.3s;">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square">
+                        <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=400&h=400&fit=crop" 
+                            alt="Bedding Sets" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-semibold text-lg">Bedding Sets</h3>
+                            <p class="text-white/80 text-sm">Complete Comfort</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/products.html?category=bed-frames" class="group section-fade" style="transition-delay: 0.4s;">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square">
+                        <img src="https://images.unsplash.com/photo-1505693314120-0d443867891c?w=400&h=400&fit=crop" 
+                            alt="Bed Frames" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-semibold text-lg">Bed Frames</h3>
+                            <p class="text-white/80 text-sm">Stylish & Durable</p>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="pages/products.html?category=protectors" class="group section-fade col-span-2 md:col-span-1" style="transition-delay: 0.5s;">
+                    <div class="relative overflow-hidden rounded-2xl aspect-square">
+                        <img src="https://images.unsplash.com/photo-1522771753035-a0a1f66cd459?w=400&h=400&fit=crop" 
+                            alt="Protectors" 
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <h3 class="text-white font-semibold text-lg">Protectors</h3>
+                            <p class="text-white/80 text-sm">Stay Protected</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between mb-12 section-fade">
+                <div>
+                    <span class="text-primary-600 font-semibold text-sm uppercase tracking-wider">Featured</span>
+                    <h2 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mt-2">Best Selling Products</h2>
+                </div>
+                <a href="pages/products.html" class="mt-4 md:mt-0 text-primary-600 font-semibold hover:text-primary-700 inline-flex items-center">
+                    View All Products
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8" id="featured-products">
+                <!-- Products will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 section-fade">
+                <span class="text-primary-600 font-semibold text-sm uppercase tracking-wider">Why Choose Us</span>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mt-2">The Primex Difference</h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 section-fade" style="transition-delay: 0.1s;">
+                    <div class="w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-truck text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Free Delivery</h3>
+                    <p class="text-gray-600">Free shipping on orders over $500. We deliver to your doorstep.</p>
+                </div>
+
+                <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-secondary-50 to-secondary-100 section-fade" style="transition-delay: 0.2s;">
+                    <div class="w-16 h-16 bg-secondary-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-shield-alt text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">10-Year Warranty</h3>
+                    <p class="text-gray-600">All our mattresses come with a comprehensive 10-year warranty.</p>
+                </div>
+
+                <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-accent-50 to-accent-100 section-fade" style="transition-delay: 0.3s;">
+                    <div class="w-16 h-16 bg-accent-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-undo text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">100-Night Trial</h3>
+                    <p class="text-gray-600">Try our mattresses risk-free for 100 nights. Love it or return it.</p>
+                </div>
+
+                <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-primary-50 to-secondary-50 section-fade" style="transition-delay: 0.4s;">
+                    <div class="w-16 h-16 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-headset text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">24/7 Support</h3>
+                    <p class="text-gray-600">Our sleep experts are available round the clock to help you.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-20 bg-gradient-to-br from-primary-900 to-secondary-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 section-fade">
+                <span class="text-accent-400 font-semibold text-sm uppercase tracking-wider">Testimonials</span>
+                <h2 class="text-4xl md:text-5xl font-serif font-bold text-white mt-2">What Our Customers Say</h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8" id="testimonials">
+                <!-- Testimonials will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-20 bg-accent-500">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center section-fade">
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Get 15% Off Your First Order</h2>
+            <p class="text-gray-800 mb-8 text-lg">Subscribe to our newsletter for exclusive deals, sleep tips, and new product announcements.</p>
+            <form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto" onsubmit="subscribeNewsletter(event)">
+                <input type="email" placeholder="Enter your email" required
+                    class="flex-1 px-6 py-4 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 text-gray-900">
+                <button type="submit" class="px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors">
+                    Subscribe
+                </button>
+            </form>
+            <p class="text-gray-700 text-sm mt-4">No spam, unsubscribe anytime. By subscribing, you agree to our Privacy Policy.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <!-- Company Info -->
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bed text-white text-lg"></i>
+                        </div>
+                        <span class="text-2xl font-serif font-bold">Primex</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">Premium mattresses and bedding for your perfect sleep. Experience comfort like never before.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
+                        <li><a href="pages/products.html" class="text-gray-400 hover:text-white transition-colors">Products</a></li>
+                        <li><a href="pages/products.html?category=mattresses" class="text-gray-400 hover:text-white transition-colors">Mattresses</a></li>
+                        <li><a href="pages/products.html?category=bedding-sets" class="text-gray-400 hover:text-white transition-colors">Bedding</a></li>
+                        <li><a href="pages/contact.html" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Customer Service -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Customer Service</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Info</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns & Exchanges</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Warranty</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Size Guide</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h3 class="text-lg font-semibold mb-6">Contact Us</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start space-x-3">
+                            <i class="fas fa-map-marker-alt text-primary-500 mt-1"></i>
+                            <span class="text-gray-400">123 Sleep Street, Dream City, DC 12345</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-phone text-primary-500"></i>
+                            <span class="text-gray-400">1-800-PRIMEX</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-primary-500"></i>
+                            <span class="text-gray-400">support@primex.com</span>
+                        </li>
+                        <li class="flex items-center space-x-3">
+                            <i class="fas fa-clock text-primary-500"></i>
+                            <span class="text-gray-400">Mon-Sat: 9AM - 8PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm">&copy; 2024 Primex Mattress & Beddings. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-green-400"></i>
+            <span id="toast-message">Item added to cart</span>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Load featured products
+        async function loadFeaturedProducts() {
+            try {
+                const response = await fetch('../backend/api/products.php?featured=1&limit=4');
+                const result = await response.json();
+                
+                if (result.success && result.data.products) {
+                    const container = document.getElementById('featured-products');
+                    container.innerHTML = result.data.products.map((product, index) => `
+                        <div class="product-card bg-white rounded-2xl overflow-hidden shadow-lg card-hover section-fade" style="transition-delay: ${index * 0.1}s;">
+                            <div class="relative overflow-hidden aspect-square">
+                                <img src="${product.main_image || 'https://via.placeholder.com/400'}" 
+                                    alt="${product.name}" 
+                                    class="w-full h-full object-cover">
+                                ${product.discount_price ? `
+                                    <div class="absolute top-4 left-4 bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                        Save $${(product.price - product.discount_price).toFixed(0)}
+                                    </div>
+                                ` : ''}
+                                <button onclick="addToCart(${product.id})" 
+                                    class="absolute bottom-4 right-4 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all transform translate-y-16 opacity-0 group-hover:translate-y-0 group-hover:opacity-100">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                            <div class="p-6">
+                                <div class="text-sm text-gray-500 mb-1">${product.category_name || 'Product'}</div>
+                                <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${product.name}</h3>
+                                <div class="flex items-center space-x-2">
+                                    ${product.discount_price ? `
+                                        <span class="text-lg font-bold text-primary-600">$${parseFloat(product.discount_price).toFixed(2)}</span>
+                                        <span class="text-sm text-gray-400 line-through">$${parseFloat(product.price).toFixed(2)}</span>
+                                    ` : `
+                                        <span class="text-lg font-bold text-primary-600">$${parseFloat(product.price).toFixed(2)}</span>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading featured products:', error);
+            }
+        }
+
+        // Load testimonials
+        function loadTestimonials() {
+            const testimonials = [
+                {
+                    name: "Sarah Johnson",
+                    role: "Verified Buyer",
+                    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
+                    rating: 5,
+                    text: "The best mattress I've ever owned! I used to wake up with back pain, but since switching to Primex, I sleep through the night and wake up refreshed."
+                },
+                {
+                    name: "Michael Chen",
+                    role: "Verified Buyer",
+                    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
+                    rating: 5,
+                    text: "Exceptional quality and comfort. The memory foam contours perfectly to my body. Customer service was also fantastic during the delivery process."
+                },
+                {
+                    name: "Emily Davis",
+                    role: "Verified Buyer",
+                    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
+                    rating: 5,
+                    text: "Love my new bedding set! The Egyptian cotton feels so luxurious. I've already recommended Primex to all my friends and family."
+                }
+            ];
+
+            const container = document.getElementById('testimonials');
+            container.innerHTML = testimonials.map((t, index) => `
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 section-fade" style="transition-delay: ${index * 0.15}s;">
+                    <div class="flex items-center space-x-1 mb-4">
+                        ${Array(5).fill(0).map((_, i) => `
+                            <i class="fas fa-star ${i < t.rating ? 'text-accent-400' : 'text-gray-400'}"></i>
+                        `).join('')}
+                    </div>
+                    <p class="text-white/90 mb-6 text-lg leading-relaxed">"${t.text}"</p>
+                    <div class="flex items-center space-x-4">
+                        <img src="${t.image}" alt="${t.name}" class="w-12 h-12 rounded-full object-cover">
+                        <div>
+                            <div class="font-semibold text-white">${t.name}</div>
+                            <div class="text-white/60 text-sm">${t.role}</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFeaturedProducts();
+            loadTestimonials();
+            updateCartCount();
+            initScrollAnimations();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Primex Mattress & Beddings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a',
+                        },
+                        secondary: {
+                            50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe',
+                            400: '#c084fc', 500: '#a855f7', 600: '#9333ea', 700: '#7c3aed',
+                            800: '#6b21a8', 900: '#581c87',
+                        },
+                        accent: {
+                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047',
+                            400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207',
+                            800: '#854d0e', 900: '#713f12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #6b21a8 100%);
+            transform: translateY(-2px);
+        }
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: scaleIn 0.5s ease;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bed text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-serif font-bold bg-gradient-to-r from-primary-700 to-secondary-700 bg-clip-text text-transparent">Primex</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Confirmation Section -->
+    <section class="pt-32 pb-16 min-h-screen">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
+                <div class="checkmark mx-auto mb-8">
+                    <i class="fas fa-check text-white text-4xl"></i>
+                </div>
+
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Thank You for Your Order!</h1>
+                <p class="text-gray-600 text-lg mb-6">Your order has been placed successfully. We'll send you a confirmation email shortly.</p>
+
+                <div class="bg-gray-50 rounded-xl p-6 mb-8">
+                    <div class="text-sm text-gray-500 mb-2">Order Number</div>
+                    <div class="text-2xl font-bold text-primary-600" id="order-number">-</div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="../index.html" class="btn-primary text-white px-8 py-4 rounded-lg font-semibold inline-flex items-center justify-center">
+                        <i class="fas fa-home mr-2"></i>Continue Shopping
+                    </a>
+                    <a href="products.html" class="px-8 py-4 border-2 border-primary-600 text-primary-600 rounded-lg font-semibold hover:bg-primary-50 transition-colors inline-flex items-center justify-center">
+                        <i class="fas fa-shopping-bag mr-2"></i>Browse Products
+                    </a>
+                </div>
+            </div>
+
+            <!-- What's Next -->
+            <div class="mt-8 grid md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                    <div class="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-envelope text-primary-600"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Order Confirmation</h3>
+                    <p class="text-gray-600 text-sm">You'll receive an email with your order details.</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                    <div class="w-12 h-12 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-truck text-secondary-600"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Shipping</h3>
+                    <p class="text-gray-600 text-sm">Your order will be shipped within 1-2 business days.</p>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+                    <div class="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-accent-600"></i>
+                    </div>
+                    <h3 class="font-semibold mb-2">Need Help?</h3>
+                    <p class="text-gray-600 text-sm">Contact us at support@primex.com</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-bed text-white text-sm"></i>
+                </div>
+                <span class="text-xl font-serif font-bold">Primex</span>
+            </div>
+            <p class="text-gray-400">&copy; 2024 Primex Mattress & Beddings. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Get order number from URL
+        const orderNumber = new URLSearchParams(window.location.search).get('order');
+        if (orderNumber) {
+            document.getElementById('order-number').textContent = orderNumber;
+        }
+    </script>
+</body>
+</html>

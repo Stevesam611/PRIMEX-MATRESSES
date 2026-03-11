@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - Primex Mattress & Beddings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd',
+                            400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8',
+                            800: '#1e40af', 900: '#1e3a8a',
+                        },
+                        secondary: {
+                            50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe',
+                            400: '#c084fc', 500: '#a855f7', 600: '#9333ea', 700: '#7c3aed',
+                            800: '#6b21a8', 900: '#581c87',
+                        },
+                        accent: {
+                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047',
+                            400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207',
+                            800: '#854d0e', 900: '#713f12',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, #6b21a8 100%);
+            transform: translateY(-2px);
+        }
+        .thumbnail.active { ring: 2px solid #2563eb; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, #eab308, #facc15);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+    </style>
+</head>
+<body class="font-sans text-gray-800 bg-gray-50">
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="../index.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bed text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-serif font-bold bg-gradient-to-r from-primary-700 to-secondary-700 bg-clip-text text-transparent">Primex</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="../index.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Home</a>
+                    <a href="products.html" class="nav-link text-primary-600 font-medium">Products</a>
+                    <a href="products.html?category=mattresses" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Mattresses</a>
+                    <a href="contact.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Contact</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <a href="cart.html" class="p-2 text-gray-600 hover:text-primary-600 relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-accent-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+                    </a>
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-600 hover:text-primary-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <section class="pt-32 pb-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center text-gray-500 text-sm mb-8">
+                <a href="../index.html" class="hover:text-primary-600">Home</a>
+                <i class="fas fa-chevron-right mx-2 text-xs"></i>
+                <a href="products.html" class="hover:text-primary-600">Products</a>
+                <i class="fas fa-chevron-right mx-2 text-xs"></i>
+                <span id="breadcrumb-name" class="text-gray-900">Loading...</span>
+            </nav>
+
+            <div class="grid lg:grid-cols-2 gap-12" id="product-detail">
+                <!-- Product Images -->
+                <div>
+                    <div class="bg-white rounded-2xl overflow-hidden shadow-lg mb-4">
+                        <img id="main-image" src="" alt="" class="w-full aspect-square object-cover">
+                    </div>
+                    <div class="grid grid-cols-4 gap-4" id="thumbnail-container">
+                        <!-- Thumbnails loaded dynamically -->
+                    </div>
+                </div>
+
+                <!-- Product Info -->
+                <div>
+                    <div id="product-info">
+                        <!-- Product info loaded dynamically -->
+                    </div>
+
+                    <!-- Quantity and Add to Cart -->
+                    <div class="flex items-center space-x-4 mb-8">
+                        <div class="flex items-center border border-gray-200 rounded-lg">
+                            <button onclick="updateQuantity(-1)" class="px-4 py-3 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" class="w-16 text-center border-0 focus:ring-0" readonly>
+                            <button onclick="updateQuantity(1)" class="px-4 py-3 hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                        <button onclick="addToCartWithQuantity()" class="flex-1 btn-primary text-white py-4 rounded-lg font-semibold flex items-center justify-center space-x-2">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Add to Cart</span>
+                        </button>
+                        <button class="w-14 h-14 border border-gray-200 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-500 transition-colors">
+                            <i class="fas fa-heart text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Features -->
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="flex items-center space-x-3 p-4 bg-primary-50 rounded-lg">
+                            <i class="fas fa-truck text-primary-600"></i>
+                            <span class="text-sm">Free Delivery</span>
+                        </div>
+                        <div class="flex items-center space-x-3 p-4 bg-secondary-50 rounded-lg">
+                            <i class="fas fa-shield-alt text-secondary-600"></i>
+                            <span class="text-sm">10-Year Warranty</span>
+                        </div>
+                        <div class="flex items-center space-x-3 p-4 bg-accent-50 rounded-lg">
+                            <i class="fas fa-undo text-accent-600"></i>
+                            <span class="text-sm">100-Night Trial</span>
+                        </div>
+                        <div class="flex items-center space-x-3 p-4 bg-primary-50 rounded-lg">
+                            <i class="fas fa-headset text-primary-600"></i>
+                            <span class="text-sm">24/7 Support</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="mt-16">
+                <div class="border-b border-gray-200">
+                    <div class="flex space-x-8">
+                        <button onclick="switchTab('description')" id="tab-description" class="pb-4 text-primary-600 border-b-2 border-primary-600 font-medium">Description</button>
+                        <button onclick="switchTab('specifications')" id="tab-specifications" class="pb-4 text-gray-500 hover:text-gray-700 font-medium">Specifications</button>
+                        <button onclick="switchTab('reviews')" id="tab-reviews" class="pb-4 text-gray-500 hover:text-gray-700 font-medium">Reviews</button>
+                    </div>
+                </div>
+
+                <div class="py-8">
+                    <div id="content-description" class="tab-content active">
+                        <div class="prose max-w-none" id="description-content">
+                            <!-- Description loaded dynamically -->
+                        </div>
+                    </div>
+                    <div id="content-specifications" class="tab-content">
+                        <div id="specifications-content">
+                            <!-- Specifications loaded dynamically -->
+                        </div>
+                    </div>
+                    <div id="content-reviews" class="tab-content">
+                        <div id="reviews-content">
+                            <!-- Reviews loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="py-16 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-serif font-bold text-gray-900 mb-8">You May Also Like</h2>
+            <div class="grid md:grid-cols-4 gap-6" id="related-products">
+                <!-- Related products loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bed text-white"></i>
+                        </div>
+                        <span class="text-2xl font-serif font-bold">Primex</span>
+                    </div>
+                    <p class="text-gray-400">Premium mattresses and bedding for your perfect sleep.</p>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="../index.html" class="text-gray-400 hover:text-white">Home</a></li>
+                        <li><a href="products.html" class="text-gray-400 hover:text-white">Products</a></li>
+                        <li><a href="contact.html" class="text-gray-400 hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Customer Service</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">Shipping</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">Returns</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><i class="fas fa-phone mr-2"></i> 1-800-PRIMEX</li>
+                        <li><i class="fas fa-envelope mr-2"></i> support@primex.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
+                <p>&copy; 2024 Primex Mattress & Beddings. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-4 rounded-lg shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+        <div class="flex items-center space-x-3">
+            <i class="fas fa-check-circle text-green-400"></i>
+            <span id="toast-message">Item added to cart</span>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        let productId = null;
+        let currentProduct = null;
+
+        // Load product details
+        async function loadProduct() {
+            const slug = getUrlParam('slug');
+            if (!slug) {
+                window.location.href = 'products.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`../backend/api/products.php?slug=${slug}`);
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    currentProduct = result.data;
+                    productId = currentProduct.id;
+                    displayProduct(currentProduct);
+                    loadRelatedProducts(currentProduct.category_id);
+                } else {
+                    window.location.href = 'products.html';
+                }
+            } catch (error) {
+                console.error('Error loading product:', error);
+            }
+        }
+
+        // Display product
+        function displayProduct(product) {
+            document.getElementById('breadcrumb-name').textContent = product.name;
+            document.title = `${product.name} - Primex Mattress & Beddings`;
+
+            // Main image
+            document.getElementById('main-image').src = product.main_image || 'https://via.placeholder.com/600';
+            document.getElementById('main-image').alt = product.name;
+
+            // Thumbnails
+            const thumbnails = product.images?.length > 0 ? product.images : [{ image_url: product.main_image, is_primary: true }];
+            document.getElementById('thumbnail-container').innerHTML = thumbnails.map((img, i) => `
+                <button onclick="changeMainImage('${img.image_url}')" class="thumbnail ${img.is_primary ? 'active' : ''} rounded-lg overflow-hidden border-2 ${img.is_primary ? 'border-primary-600' : 'border-transparent'} hover:border-primary-400 transition-colors">
+                    <img src="${img.image_url}" alt="" class="w-full aspect-square object-cover">
+                </button>
+            `).join('');
+
+            // Product info
+            const priceHtml = product.discount_price ? `
+                <div class="flex items-center space-x-4 mb-4">
+                    <span class="text-4xl font-bold text-primary-600">$${parseFloat(product.discount_price).toFixed(2)}</span>
+                    <span class="text-2xl text-gray-400 line-through">$${parseFloat(product.price).toFixed(2)}</span>
+                    <span class="bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold">Save $${(product.price - product.discount_price).toFixed(0)}</span>
+                </div>
+            ` : `
+                <div class="text-4xl font-bold text-primary-600 mb-4">$${parseFloat(product.price).toFixed(2)}</div>
+            `;
+
+            const ratingHtml = product.average_rating ? `
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="flex text-accent-400">
+                        ${Array(5).fill(0).map((_, i) => `
+                            <i class="fas fa-star ${i < Math.round(product.average_rating) ? '' : 'text-gray-300'}"></i>
+                        `).join('')}
+                    </div>
+                    <span class="text-gray-600">${product.average_rating} (${product.review_count} reviews)</span>
+                </div>
+            ` : '';
+
+            document.getElementById('product-info').innerHTML = `
+                <div class="text-sm text-primary-600 font-medium mb-2">${product.category_name || 'Product'}</div>
+                <h1 class="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">${product.name}</h1>
+                ${ratingHtml}
+                ${priceHtml}
+                <p class="text-gray-600 mb-6">${product.short_description || ''}</p>
+                
+                ${product.stock_quantity < 10 ? `
+                    <div class="text-red-500 font-medium mb-4">
+                        <i class="fas fa-exclamation-circle mr-2"></i>Only ${product.stock_quantity} left in stock
+                    </div>
+                ` : `
+                    <div class="text-green-600 font-medium mb-4">
+                        <i class="fas fa-check-circle mr-2"></i>In Stock
+                    </div>
+                `}
+            `;
+
+            // Description
+            document.getElementById('description-content').innerHTML = product.description || 'No description available.';
+
+            // Specifications
+            const specs = product.specifications ? JSON.parse(product.specifications) : {};
+            document.getElementById('specifications-content').innerHTML = Object.keys(specs).length > 0 ? `
+                <table class="w-full">
+                    <tbody>
+                        ${Object.entries(specs).map(([key, value]) => `
+                            <tr class="border-b border-gray-100">
+                                <td class="py-3 text-gray-600 capitalize">${key}</td>
+                                <td class="py-3 text-gray-900 font-medium">${value}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            ` : '<p class="text-gray-500">No specifications available.</p>';
+
+            // Reviews
+            const reviews = product.reviews || [];
+            document.getElementById('reviews-content').innerHTML = reviews.length > 0 ? `
+                <div class="space-y-6">
+                    ${reviews.map(review => `
+                        <div class="border-b border-gray-100 pb-6">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center">
+                                        <span class="text-primary-600 font-semibold">${review.customer_name.charAt(0)}</span>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold">${review.customer_name}</div>
+                                        <div class="text-sm text-gray-500">${new Date(review.created_at).toLocaleDateString()}</div>
+                                    </div>
+                                </div>
+                                <div class="flex text-accent-400">
+                                    ${Array(5).fill(0).map((_, i) => `
+                                        <i class="fas fa-star ${i < review.rating ? '' : 'text-gray-300'}"></i>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <h4 class="font-semibold mb-2">${review.title || ''}</h4>
+                            <p class="text-gray-600">${review.review}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            ` : '<p class="text-gray-500">No reviews yet.</p>';
+        }
+
+        // Change main image
+        function changeMainImage(url) {
+            document.getElementById('main-image').src = url;
+            document.querySelectorAll('.thumbnail').forEach(t => {
+                t.classList.remove('active', 'border-primary-600');
+                t.classList.add('border-transparent');
+            });
+            event.currentTarget.classList.add('active', 'border-primary-600');
+            event.currentTarget.classList.remove('border-transparent');
+        }
+
+        // Update quantity
+        function updateQuantity(change) {
+            const input = document.getElementById('quantity');
+            const newValue = parseInt(input.value) + change;
+            if (newValue >= 1) {
+                input.value = newValue;
+            }
+        }
+
+        // Add to cart with quantity
+        async function addToCartWithQuantity() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+            await addToCart(productId, quantity);
+        }
+
+        // Switch tab
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('[id^="tab-"]').forEach(t => {
+                t.classList.remove('text-primary-600', 'border-b-2', 'border-primary-600');
+                t.classList.add('text-gray-500');
+            });
+
+            document.getElementById(`content-${tab}`).classList.add('active');
+            document.getElementById(`tab-${tab}`).classList.add('text-primary-600', 'border-b-2', 'border-primary-600');
+            document.getElementById(`tab-${tab}`).classList.remove('text-gray-500');
+        }
+
+        // Load related products
+        async function loadRelatedProducts(categoryId) {
+            try {
+                const response = await fetch(`../backend/api/products.php?category=${categoryId}&limit=4`);
+                const result = await response.json();
+
+                if (result.success && result.data.products) {
+                    const products = result.data.products.filter(p => p.id !== productId).slice(0, 4);
+                    document.getElementById('related-products').innerHTML = products.map(p => `
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow">
+                            <a href="product-detail.html?slug=${p.slug}">
+                                <img src="${p.main_image || 'https://via.placeholder.com/300'}" alt="${p.name}" class="w-full aspect-square object-cover">
+                            </a>
+                            <div class="p-4">
+                                <a href="product-detail.html?slug=${p.slug}" class="block">
+                                    <h3 class="font-semibold text-gray-900 hover:text-primary-600 transition-colors">${p.name}</h3>
+                                </a>
+                                <div class="flex items-center justify-between mt-2">
+                                    <span class="text-lg font-bold text-primary-600">$${parseFloat(p.discount_price || p.price).toFixed(2)}</span>
+                                    <button onclick="addToCart(${p.id})" class="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-colors">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading related products:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProduct();
+            updateCartCount();
+        });
+    </script>
+</body>
+</html>
