@@ -182,6 +182,21 @@ try {
             $row = $stmt->fetch();
             $productId = $row['id'];
 
+            // Save additional images to product_images table
+            if (!empty($data['images'])) {
+                foreach ($data['images'] as $i => $img) {
+                    $db->query(
+                        "INSERT INTO product_images (product_id, image_url, is_primary, sort_order) VALUES (:product_id, :image_url, :is_primary, :sort_order)",
+                        [
+                            'product_id' => $productId,
+                            'image_url'  => $img['url'],
+                            'is_primary' => $img['isMain'] ? 'true' : 'false',
+                            'sort_order' => $i
+                        ]
+                    );
+                }
+            }
+
             successResponse(['id' => $productId, 'message' => 'Product created successfully']);
             break;
             
@@ -233,7 +248,23 @@ try {
             ];
             
             $db->query($sql, $params);
-            
+
+            // Replace product images
+            $db->query("DELETE FROM product_images WHERE product_id = :id", ['id' => $id]);
+            if (!empty($data['images'])) {
+                foreach ($data['images'] as $i => $img) {
+                    $db->query(
+                        "INSERT INTO product_images (product_id, image_url, is_primary, sort_order) VALUES (:product_id, :image_url, :is_primary, :sort_order)",
+                        [
+                            'product_id' => $id,
+                            'image_url'  => $img['url'],
+                            'is_primary' => $img['isMain'] ? 'true' : 'false',
+                            'sort_order' => $i
+                        ]
+                    );
+                }
+            }
+
             successResponse(['message' => 'Product updated successfully']);
             break;
             

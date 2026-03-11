@@ -3,10 +3,8 @@
  * Primex Mattress & Beddings - Admin Dashboard API
  */
 
-require_once __DIR__ . '/../includes/database.php';
 require_once __DIR__ . '/../includes/auth.php';
 
-session_start();
 $db = Database::getInstance();
 $auth->requireAdmin();
 
@@ -29,8 +27,8 @@ try {
             $stmt = $db->query("SELECT COUNT(*) as total FROM categories WHERE is_active = TRUE");
             $stats['total_categories'] = $stmt->fetch()['total'];
             
-            // Total customers
-            $stmt = $db->query("SELECT COUNT(*) as total FROM customers");
+            // Total customers (derived from orders)
+            $stmt = $db->query("SELECT COUNT(DISTINCT customer_email) as total FROM orders");
             $stats['total_customers'] = $stmt->fetch()['total'];
             
             // Sales summary
@@ -59,17 +57,21 @@ try {
             $stmt = $db->query("SELECT id, name, sku, stock_quantity FROM products WHERE stock_quantity < 10 AND is_active = TRUE ORDER BY stock_quantity ASC LIMIT 10");
             $stats['low_stock'] = $stmt->fetchAll();
             
-            // Monthly sales data for chart
-            $stmt = $db->query("SELECT 
+            // Monthly sales data for chart (filtered by year)
+            $year = isset($_GET['year']) ? (int)$_GET['year'] : (int)date('Y');
+            $stmt = $db->query("SELECT
                 DATE_TRUNC('month', created_at) as month,
                 COUNT(*) as order_count,
                 COALESCE(SUM(total_amount), 0) as revenue
-                FROM orders 
-                WHERE created_at >= CURRENT_DATE - INTERVAL '12 months'
+                FROM orders
+                WHERE EXTRACT(YEAR FROM created_at) = :year
                 AND status != 'cancelled'
                 GROUP BY DATE_TRUNC('month', created_at)
-                ORDER BY month ASC");
+                ORDER BY month ASC",
+                ['year' => $year]
+            );
             $stats['monthly_sales'] = $stmt->fetchAll();
+            $stats['sales_year'] = $year;
             
             // Top selling products
             $stmt = $db->query("SELECT 

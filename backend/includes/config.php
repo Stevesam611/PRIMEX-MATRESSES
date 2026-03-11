@@ -32,9 +32,10 @@ define('ADMIN_EMAIL', 'admin@primex.com');
 define('STRIPE_PUBLIC_KEY', 'pk_test_your_key');
 define('STRIPE_SECRET_KEY', 'sk_test_your_key');
 
-// Error Reporting
+// Error Reporting - log errors but never output them (would corrupt JSON responses)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+ini_set('log_errors', 1);
 
 // Timezone
 date_default_timezone_set('America/New_York');

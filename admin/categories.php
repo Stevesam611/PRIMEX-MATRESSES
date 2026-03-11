@@ -135,7 +135,7 @@ $auth->requireAdmin();
         // Load categories
         async function loadCategories() {
             try {
-                const response = await fetch('../backend/api/categories.php');
+                const response = await fetch('../backend/api/categories.php?admin=1');
                 const result = await response.json();
 
                 if (result.success) {
@@ -193,7 +193,7 @@ $auth->requireAdmin();
         // Edit category
         async function editCategory(id) {
             try {
-                const response = await fetch(`../backend/api/categories.php?slug=${id}`);
+                const response = await fetch(`../backend/api/categories.php?id=${id}`);
                 const result = await response.json();
                 
                 if (result.success) {

@@ -11,16 +11,31 @@ $db = Database::getInstance();
 try {
     switch ($method) {
         case 'GET':
-            if (isset($_GET['slug'])) {
-                // Get single category
-                $sql = "SELECT c.*, COUNT(p.id) as product_count 
-                        FROM categories c 
-                        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = TRUE 
-                        WHERE c.slug = :slug 
+            if (isset($_GET['id'])) {
+                // Get single category by ID (admin use)
+                $sql = "SELECT c.*, COUNT(p.id) as product_count
+                        FROM categories c
+                        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = TRUE
+                        WHERE c.id = :id
+                        GROUP BY c.id";
+                $stmt = $db->query($sql, ['id' => $_GET['id']]);
+                $category = $stmt->fetch();
+
+                if ($category) {
+                    successResponse($category);
+                } else {
+                    errorResponse('Category not found', 404);
+                }
+            } elseif (isset($_GET['slug'])) {
+                // Get single category by slug
+                $sql = "SELECT c.*, COUNT(p.id) as product_count
+                        FROM categories c
+                        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = TRUE
+                        WHERE c.slug = :slug
                         GROUP BY c.id";
                 $stmt = $db->query($sql, ['slug' => $_GET['slug']]);
                 $category = $stmt->fetch();
-                
+
                 if ($category) {
                     successResponse($category);
                 } else {
@@ -28,15 +43,17 @@ try {
                 }
             } else {
                 // Get all categories
-                $sql = "SELECT c.*, COUNT(p.id) as product_count 
-                        FROM categories c 
-                        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = TRUE 
-                        WHERE c.is_active = TRUE 
-                        GROUP BY c.id 
+                // Admin gets all; frontend gets only active ones
+                $isAdmin = isset($_GET['admin']) && $_GET['admin'] == '1';
+                $sql = "SELECT c.*, COUNT(p.id) as product_count
+                        FROM categories c
+                        LEFT JOIN products p ON c.id = p.category_id AND p.is_active = TRUE"
+                        . ($isAdmin ? "" : " WHERE c.is_active = TRUE") .
+                        " GROUP BY c.id
                         ORDER BY c.sort_order, c.name";
                 $stmt = $db->query($sql);
                 $categories = $stmt->fetchAll();
-                
+
                 successResponse($categories);
             }
             break;
@@ -47,9 +64,10 @@ try {
             
             $data = json_decode(file_get_contents('php://input'), true);
             
-            $sql = "INSERT INTO categories (name, slug, description, image_url, parent_id, sort_order) 
-                    VALUES (:name, :slug, :description, :image_url, :parent_id, :sort_order)";
-            
+            $sql = "INSERT INTO categories (name, slug, description, image_url, parent_id, sort_order)
+                    VALUES (:name, :slug, :description, :image_url, :parent_id, :sort_order)
+                    RETURNING id";
+
             $params = [
                 'name' => $data['name'],
                 'slug' => generateSlug($data['name']),
@@ -58,10 +76,11 @@ try {
                 'parent_id' => $data['parent_id'] ?? null,
                 'sort_order' => $data['sort_order'] ?? 0
             ];
-            
-            $db->query($sql, $params);
-            
-            successResponse(['id' => $db->lastInsertId(), 'message' => 'Category created successfully']);
+
+            $stmt = $db->query($sql, $params);
+            $row = $stmt->fetch();
+
+            successResponse(['id' => $row['id'], 'message' => 'Category created successfully']);
             break;
             
         case 'PUT':
@@ -87,7 +106,7 @@ try {
                 'image_url' => $data['image_url'] ?? null,
                 'parent_id' => $data['parent_id'] ?? null,
                 'sort_order' => $data['sort_order'] ?? 0,
-                'is_active' => $data['is_active'] ?? true
+                'is_active' => !empty($data['is_active']) ? 'true' : 'false'
             ];
             
             $db->query($sql, $params);

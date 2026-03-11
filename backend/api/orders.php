@@ -90,22 +90,22 @@ try {
                 
                 $sql = "INSERT INTO orders (
                     order_number, customer_email, customer_phone,
-                    shipping_first_name, shipping_last_name, shipping_address, shipping_city, 
+                    shipping_first_name, shipping_last_name, shipping_address, shipping_city,
                     shipping_state, shipping_zip, shipping_country,
-                    billing_first_name, billing_last_name, billing_address, billing_city, 
+                    billing_first_name, billing_last_name, billing_address, billing_city,
                     billing_state, billing_zip, billing_country,
                     subtotal, shipping_cost, tax_amount, discount_amount, total_amount,
                     status, payment_status, payment_method, notes
                 ) VALUES (
                     :order_number, :customer_email, :customer_phone,
-                    :shipping_first_name, :shipping_last_name, :shipping_address, :shipping_city, 
+                    :shipping_first_name, :shipping_last_name, :shipping_address, :shipping_city,
                     :shipping_state, :shipping_zip, :shipping_country,
-                    :billing_first_name, :billing_last_name, :billing_address, :billing_city, 
+                    :billing_first_name, :billing_last_name, :billing_address, :billing_city,
                     :billing_state, :billing_zip, :billing_country,
                     :subtotal, :shipping_cost, :tax_amount, :discount_amount, :total_amount,
                     :status, :payment_status, :payment_method, :notes
-                )";
-                
+                ) RETURNING id";
+
                 $params = [
                     'order_number' => $orderNumber,
                     'customer_email' => $data['email'],
@@ -114,16 +114,16 @@ try {
                     'shipping_last_name' => $data['shipping']['last_name'],
                     'shipping_address' => $data['shipping']['address'],
                     'shipping_city' => $data['shipping']['city'],
-                    'shipping_state' => $data['shipping']['state'],
-                    'shipping_zip' => $data['shipping']['zip'],
-                    'shipping_country' => $data['shipping']['country'] ?? 'USA',
+                    'shipping_state' => $data['shipping']['state'] ?? '',
+                    'shipping_zip' => $data['shipping']['zip'] ?? '',
+                    'shipping_country' => $data['shipping']['country'] ?? 'KE',
                     'billing_first_name' => $data['billing']['first_name'],
                     'billing_last_name' => $data['billing']['last_name'],
                     'billing_address' => $data['billing']['address'],
                     'billing_city' => $data['billing']['city'],
-                    'billing_state' => $data['billing']['state'],
-                    'billing_zip' => $data['billing']['zip'],
-                    'billing_country' => $data['billing']['country'] ?? 'USA',
+                    'billing_state' => $data['billing']['state'] ?? '',
+                    'billing_zip' => $data['billing']['zip'] ?? '',
+                    'billing_country' => $data['billing']['country'] ?? 'KE',
                     'subtotal' => $data['subtotal'],
                     'shipping_cost' => $data['shipping_cost'] ?? 0,
                     'tax_amount' => $data['tax'],
@@ -132,11 +132,12 @@ try {
                     'status' => 'pending',
                     'payment_status' => 'pending',
                     'payment_method' => $data['payment_method'],
-                    'notes' => $data['notes'] ?? null
+                    'notes' => $data['checkout_mode'] ?? 'guest'
                 ];
-                
-                $db->query($sql, $params);
-                $orderId = $db->lastInsertId();
+
+                $stmt = $db->query($sql, $params);
+                $row = $stmt->fetch();
+                $orderId = $row['id'];
                 
                 // Insert order items
                 foreach ($data['items'] as $item) {

@@ -52,11 +52,19 @@
             border-color: #2563eb;
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
+        .choice-card {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .choice-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(37,99,235,0.15);
+        }
     </style>
 </head>
 <body class="font-sans text-gray-800 bg-gray-50">
     <!-- Navigation -->
-    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <a href="../index.html" class="flex items-center space-x-2">
@@ -65,141 +73,231 @@
                     </div>
                     <span class="text-2xl font-serif font-bold bg-gradient-to-r from-primary-700 to-secondary-700 bg-clip-text text-transparent">Primex</span>
                 </a>
-                <div class="flex items-center space-x-4">
-                    <a href="cart.html" class="p-2 text-gray-600 hover:text-primary-600 relative">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                    </a>
-                </div>
+                <a href="cart.html" class="p-2 text-gray-600 hover:text-primary-600">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                </a>
             </div>
         </div>
     </nav>
 
-    <!-- Checkout Section -->
     <section class="pt-32 pb-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h1 class="text-4xl font-serif font-bold text-gray-900 mb-8">Checkout</h1>
 
-            <!-- Progress Steps -->
-            <div class="flex items-center justify-center mb-12">
-                <div class="flex items-center space-x-4">
-                    <div class="step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold" id="step-1-indicator">1</div>
-                    <span class="text-sm font-medium" id="step-1-text">Shipping</span>
-                    <div class="w-16 h-1 bg-gray-200" id="step-1-line"></div>
-                    <div class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold" id="step-2-indicator">2</div>
-                    <span class="text-sm font-medium text-gray-500" id="step-2-text">Confirm</span>
+            <!-- Step 0: Choice Screen -->
+            <div id="choice-screen">
+                <p class="text-center text-gray-600 mb-10 text-lg">How would you like to continue?</p>
+                <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-10">
+                    <!-- Guest -->
+                    <div class="choice-card bg-white rounded-2xl shadow-lg p-8 border-2 border-transparent hover:border-primary-400 text-center" onclick="startCheckout('guest')">
+                        <div class="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user text-primary-600 text-2xl"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">Continue as Guest</h2>
+                        <p class="text-gray-500 text-sm mb-6">No account needed. Just fill in your details and place your order.</p>
+                        <button class="btn-primary w-full py-3 text-white rounded-lg font-semibold">
+                            Guest Checkout
+                        </button>
+                    </div>
+
+                    <!-- Account -->
+                    <div class="choice-card bg-white rounded-2xl shadow-lg p-8 border-2 border-transparent hover:border-secondary-400 text-center" onclick="startCheckout('account')">
+                        <div class="w-16 h-16 bg-secondary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-user-circle text-secondary-600 text-2xl"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-900 mb-2">Sign In / Create Account</h2>
+                        <p class="text-gray-500 text-sm mb-6">Save your details for faster checkout and order tracking.</p>
+                        <button class="w-full py-3 border-2 border-secondary-600 text-secondary-600 rounded-lg font-semibold hover:bg-secondary-50 transition-colors">
+                            Sign In / Register
+                        </button>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <a href="cart.html" class="text-primary-600 hover:text-primary-700 font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Cart
+                    </a>
                 </div>
             </div>
 
-            <div class="grid lg:grid-cols-3 gap-8">
-                <!-- Forms -->
-                <div class="lg:col-span-2">
-                    <!-- Step 1: Shipping Information -->
-                    <div id="step-1" class="bg-white rounded-2xl shadow-lg p-8">
-                        <h2 class="text-xl font-semibold mb-6">Shipping Information</h2>
-                        <form id="shipping-form" onsubmit="goToStep(2); return false;">
-                            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
-                                    <input type="text" name="first_name" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
-                                    <input type="text" name="last_name" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
-                                <input type="email" name="email" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
-                                <input type="tel" name="phone" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                            </div>
-
-                            <div class="mb-6">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
-                                <input type="text" name="address" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                            </div>
-
-                            <div class="grid md:grid-cols-3 gap-6 mb-6">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
-                                    <input type="text" name="city" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">State *</label>
-                                    <input type="text" name="state" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">ZIP Code *</label>
-                                    <input type="text" name="zip" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-                            </div>
-
-                            <div class="flex items-center mb-6">
-                                <input type="checkbox" id="same-billing" checked class="w-5 h-5 text-primary-600 rounded focus:ring-primary-500">
-                                <label for="same-billing" class="ml-3 text-gray-700">Billing address same as shipping</label>
-                            </div>
-
-                            <div class="flex justify-between">
-                                <a href="cart.html" class="px-8 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                                    <i class="fas fa-arrow-left mr-2"></i>Back to Cart
-                                </a>
-                                <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
-                                    Review Order<i class="fas fa-arrow-right ml-2"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Step 2: Order Confirmation -->
-                    <div id="step-2" class="hidden bg-white rounded-2xl shadow-lg p-8">
-                        <h2 class="text-xl font-semibold mb-6">Review Your Order</h2>
-
-                        <div id="order-review" class="mb-8">
-                            <!-- Order details loaded dynamically -->
-                        </div>
-
-                        <div class="flex justify-between">
-                            <button type="button" onclick="goToStep(1)" class="px-8 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                                <i class="fas fa-arrow-left mr-2"></i>Back
-                            </button>
-                            <button onclick="placeOrder()" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
-                                Place Order<i class="fas fa-check ml-2"></i>
-                            </button>
-                        </div>
+            <!-- Checkout Form (hidden until choice made) -->
+            <div id="checkout-flow" class="hidden">
+                <!-- Progress Bar -->
+                <div class="flex items-center justify-center mb-10" id="progress-bar">
+                    <div class="flex items-center space-x-3">
+                        <div class="step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm" id="step-1-indicator">1</div>
+                        <span class="text-sm font-medium" id="step-1-text">Contact</span>
+                        <div class="w-12 h-1 bg-gray-200" id="step-1-line"></div>
+                        <div class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm" id="step-2-indicator">2</div>
+                        <span class="text-sm font-medium text-gray-500" id="step-2-text">Shipping</span>
+                        <div class="w-12 h-1 bg-gray-200" id="step-2-line"></div>
+                        <div class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm" id="step-3-indicator">3</div>
+                        <span class="text-sm font-medium text-gray-500" id="step-3-text">Confirm</span>
                     </div>
                 </div>
 
-                <!-- Order Summary -->
-                <div class="lg:col-span-1">
-                    <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-                        <h2 class="text-xl font-semibold mb-6">Order Summary</h2>
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Forms -->
+                    <div class="lg:col-span-2">
 
-                        <div id="order-items" class="space-y-4 mb-6 max-h-64 overflow-y-auto">
-                            <!-- Items loaded dynamically -->
+                        <!-- Step 1: Contact Info -->
+                        <div id="step-1" class="bg-white rounded-2xl shadow-lg p-8">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-envelope text-primary-600 text-sm"></i>
+                                </div>
+                                <h2 class="text-xl font-semibold">Contact Information</h2>
+                            </div>
+                            <div id="account-note" class="hidden bg-secondary-50 border border-secondary-200 rounded-lg p-4 mb-6">
+                                <p class="text-secondary-700 text-sm"><i class="fas fa-info-circle mr-2"></i>Your details will be saved so you can track your orders and enjoy faster checkout next time.</p>
+                            </div>
+                            <form id="contact-form" onsubmit="goToStep(2); return false;">
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                                    <input type="email" name="email" required placeholder="your@email.com"
+                                        class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                                    <input type="tel" name="phone" required placeholder="e.g. 0712345678"
+                                        class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                </div>
+                                <div id="account-fields" class="hidden">
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Create Password <span class="text-gray-400 font-normal">(optional)</span></label>
+                                        <input type="password" name="password" placeholder="Min. 6 characters"
+                                            class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                    </div>
+                                </div>
+                                <div class="flex justify-between">
+                                    <button type="button" onclick="backToChoice()" class="px-6 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-arrow-left mr-2"></i>Back
+                                    </button>
+                                    <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
+                                        Continue to Shipping<i class="fas fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </form>
                         </div>
 
-                        <div class="border-t border-gray-100 pt-4 space-y-3">
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Subtotal</span>
-                                <span id="checkout-subtotal" class="font-medium">KSh 0.00</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Shipping</span>
-                                <span id="checkout-shipping" class="font-medium">FREE</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Tax (8%)</span>
-                                <span id="checkout-tax" class="font-medium">KSh 0.00</span>
-                            </div>
-                            <div class="border-t border-gray-100 pt-3">
-                                <div class="flex justify-between">
-                                    <span class="text-lg font-semibold">Total</span>
-                                    <span id="checkout-total" class="text-2xl font-bold text-primary-600">KSh 0.00</span>
+                        <!-- Step 2: Shipping Info -->
+                        <div id="step-2" class="hidden bg-white rounded-2xl shadow-lg p-8">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-map-marker-alt text-primary-600 text-sm"></i>
                                 </div>
+                                <h2 class="text-xl font-semibold">Shipping Information</h2>
+                            </div>
+                            <form id="shipping-form" onsubmit="goToStep(3); return false;">
+                                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">First Name *</label>
+                                        <input type="text" name="first_name" required
+                                            class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Last Name *</label>
+                                        <input type="text" name="last_name" required
+                                            class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                    </div>
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                                    <input type="text" name="address" required placeholder="House/Building, Street"
+                                        class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                </div>
+                                <div class="grid md:grid-cols-3 gap-6 mb-6">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                                        <input type="text" name="city" required
+                                            class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">County / State</label>
+                                        <input type="text" name="state"
+                                            class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Postal Code</label>
+                                        <input type="text" name="zip"
+                                            class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
+                                    </div>
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                                    <select name="country" required class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all bg-white">
+                                        <option value="KE" selected>Kenya</option>
+                                        <option value="UG">Uganda</option>
+                                        <option value="TZ">Tanzania</option>
+                                        <option value="RW">Rwanda</option>
+                                        <option value="ET">Ethiopia</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="flex justify-between">
+                                    <button type="button" onclick="goToStep(1)" class="px-6 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-arrow-left mr-2"></i>Back
+                                    </button>
+                                    <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
+                                        Review Order<i class="fas fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Step 3: Review & Confirm -->
+                        <div id="step-3" class="hidden bg-white rounded-2xl shadow-lg p-8">
+                            <div class="flex items-center mb-6">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                    <i class="fas fa-check text-green-600 text-sm"></i>
+                                </div>
+                                <h2 class="text-xl font-semibold">Review Your Order</h2>
+                            </div>
+                            <div id="order-review" class="mb-8 space-y-4">
+                                <!-- Loaded dynamically -->
+                            </div>
+                            <div class="flex justify-between">
+                                <button type="button" onclick="goToStep(2)" class="px-6 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                                    <i class="fas fa-arrow-left mr-2"></i>Back
+                                </button>
+                                <button id="place-order-btn" onclick="placeOrder()" class="btn-primary px-10 py-3 text-white rounded-lg font-semibold">
+                                    Place Order<i class="fas fa-check ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary Sidebar -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+                            <h2 class="text-lg font-semibold mb-4">Order Summary</h2>
+                            <div id="order-items" class="space-y-3 mb-4 max-h-64 overflow-y-auto">
+                                <!-- Loaded dynamically -->
+                            </div>
+                            <div class="border-t border-gray-100 pt-4 space-y-2">
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Subtotal</span>
+                                    <span id="checkout-subtotal" class="font-medium">KSh 0.00</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Shipping</span>
+                                    <span id="checkout-shipping" class="font-medium">FREE</span>
+                                </div>
+                                <div class="flex justify-between text-sm">
+                                    <span class="text-gray-600">Tax (8%)</span>
+                                    <span id="checkout-tax" class="font-medium">KSh 0.00</span>
+                                </div>
+                                <div class="border-t border-gray-100 pt-3">
+                                    <div class="flex justify-between">
+                                        <span class="font-semibold">Total</span>
+                                        <span id="checkout-total" class="text-xl font-bold text-primary-600">KSh 0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                                <p class="text-green-700 text-xs flex items-center">
+                                    <i class="fas fa-shield-alt mr-2"></i>
+                                    Cash on Delivery — Pay when your order arrives
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -218,11 +316,12 @@
 
     <script src="../js/main.js"></script>
     <script>
-        let currentStep = 1;
+        let currentStep = 0;
+        let checkoutMode = 'guest'; // 'guest' or 'account'
         let cartData = null;
+        let contactData = {};
         let shippingData = {};
 
-        // Load cart
         async function loadCart() {
             cartData = await getCart();
             if (!cartData.items || cartData.items.length === 0) {
@@ -232,17 +331,16 @@
             displayOrderSummary();
         }
 
-        // Display order summary
         function displayOrderSummary() {
             const container = document.getElementById('order-items');
             container.innerHTML = cartData.items.map(item => `
-                <div class="flex items-center space-x-4">
-                    <img src="${item.main_image || 'https://via.placeholder.com/60'}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
-                    <div class="flex-1">
-                        <h4 class="font-medium text-sm line-clamp-1">${item.name}</h4>
-                        <p class="text-gray-500 text-sm">Qty: ${item.quantity}</p>
+                <div class="flex items-center space-x-3">
+                    <img src="${item.main_image || 'https://via.placeholder.com/60'}" alt="${item.name}" class="w-14 h-14 object-cover rounded-lg flex-shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-sm line-clamp-1">${item.name}</p>
+                        <p class="text-gray-500 text-xs">Qty: ${item.quantity}</p>
                     </div>
-                    <span class="font-semibold">KSh ${(item.current_price * item.quantity).toFixed(2)}</span>
+                    <span class="font-semibold text-sm">KSh ${(item.current_price * item.quantity).toFixed(2)}</span>
                 </div>
             `).join('');
 
@@ -252,34 +350,53 @@
             document.getElementById('checkout-total').textContent = `KSh ${cartData.totals.total.toFixed(2)}`;
         }
 
-        // Go to step
-        function goToStep(step) {
-            if (step === 2) {
-                const form = document.getElementById('shipping-form');
-                if (!form.checkValidity()) {
-                    form.reportValidity();
-                    return;
-                }
-                const formData = new FormData(form);
-                shippingData = Object.fromEntries(formData);
-                displayOrderReview();
+        function startCheckout(mode) {
+            checkoutMode = mode;
+            document.getElementById('choice-screen').classList.add('hidden');
+            document.getElementById('checkout-flow').classList.remove('hidden');
+
+            if (mode === 'account') {
+                document.getElementById('account-note').classList.remove('hidden');
+                document.getElementById('account-fields').classList.remove('hidden');
             }
 
-            // Hide all steps
-            document.getElementById('step-1').classList.add('hidden');
-            document.getElementById('step-2').classList.add('hidden');
-
-            // Show current step
-            document.getElementById(`step-${step}`).classList.remove('hidden');
-
-            // Update indicators
-            updateStepIndicators(step);
-            currentStep = step;
+            showStep(1);
         }
 
-        // Update step indicators
+        function backToChoice() {
+            document.getElementById('checkout-flow').classList.add('hidden');
+            document.getElementById('choice-screen').classList.remove('hidden');
+        }
+
+        function showStep(step) {
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.add('hidden');
+            document.getElementById(`step-${step}`).classList.remove('hidden');
+            updateStepIndicators(step);
+            currentStep = step;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToStep(step) {
+            if (step === 2) {
+                const form = document.getElementById('contact-form');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+                const fd = new FormData(form);
+                contactData = Object.fromEntries(fd);
+            }
+            if (step === 3) {
+                const form = document.getElementById('shipping-form');
+                if (!form.checkValidity()) { form.reportValidity(); return; }
+                const fd = new FormData(form);
+                shippingData = Object.fromEntries(fd);
+                displayOrderReview();
+            }
+            showStep(step);
+        }
+
         function updateStepIndicators(step) {
-            for (let i = 1; i <= 2; i++) {
+            for (let i = 1; i <= 3; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
                 const text = document.getElementById(`step-${i}-text`);
                 const line = document.getElementById(`step-${i}-line`);
@@ -288,7 +405,7 @@
 
                 if (i < step) {
                     indicator.classList.add('step-completed');
-                    indicator.innerHTML = '<i class="fas fa-check"></i>';
+                    indicator.innerHTML = '<i class="fas fa-check text-xs"></i>';
                     if (line) line.classList.add('bg-green-500');
                 } else if (i === step) {
                     indicator.classList.add('step-active');
@@ -302,48 +419,63 @@
             }
         }
 
-        // Display order review
         function displayOrderReview() {
             const container = document.getElementById('order-review');
             container.innerHTML = `
-                <div class="space-y-6">
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="font-semibold mb-3">Shipping Address</h3>
-                        <p class="text-gray-600">
-                            ${shippingData.first_name} ${shippingData.last_name}<br>
-                            ${shippingData.address}<br>
-                            ${shippingData.city}, ${shippingData.state} ${shippingData.zip}<br>
-                            ${shippingData.email}<br>
-                            ${shippingData.phone}
-                        </p>
-                    </div>
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-envelope text-primary-600 mr-2 text-sm"></i>Contact
+                    </h3>
+                    <p class="text-gray-600 text-sm">${contactData.email}</p>
+                    <p class="text-gray-600 text-sm">${contactData.phone}</p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-map-marker-alt text-primary-600 mr-2 text-sm"></i>Delivery Address
+                    </h3>
+                    <p class="text-gray-600 text-sm leading-relaxed">
+                        <strong>${shippingData.first_name} ${shippingData.last_name}</strong><br>
+                        ${shippingData.address}<br>
+                        ${shippingData.city}${shippingData.state ? ', ' + shippingData.state : ''}${shippingData.zip ? ' ' + shippingData.zip : ''}<br>
+                        ${shippingData.country}
+                    </p>
+                </div>
+                <div class="bg-gray-50 rounded-xl p-5">
+                    <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                        <i class="fas fa-truck text-primary-600 mr-2 text-sm"></i>Payment & Delivery
+                    </h3>
+                    <p class="text-gray-600 text-sm">Cash on Delivery</p>
                 </div>
             `;
         }
 
-        // Place order
         async function placeOrder() {
+            const btn = document.getElementById('place-order-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Placing Order...';
+
             try {
                 const orderData = {
-                    email: shippingData.email,
-                    phone: shippingData.phone,
+                    email: contactData.email,
+                    phone: contactData.phone,
+                    checkout_mode: checkoutMode,
                     shipping: {
                         first_name: shippingData.first_name,
                         last_name: shippingData.last_name,
                         address: shippingData.address,
                         city: shippingData.city,
-                        state: shippingData.state,
-                        zip: shippingData.zip,
-                        country: 'KE'
+                        state: shippingData.state || '',
+                        zip: shippingData.zip || '',
+                        country: shippingData.country || 'KE'
                     },
                     billing: {
                         first_name: shippingData.first_name,
                         last_name: shippingData.last_name,
                         address: shippingData.address,
                         city: shippingData.city,
-                        state: shippingData.state,
-                        zip: shippingData.zip,
-                        country: 'KE'
+                        state: shippingData.state || '',
+                        zip: shippingData.zip || '',
+                        country: shippingData.country || 'KE'
                     },
                     items: cartData.items.map(item => ({
                         product_id: item.product_id,
@@ -371,20 +503,21 @@
                     showToast('Order placed successfully!');
                     setTimeout(() => {
                         window.location.href = `order-confirmation.html?order=${result.data.order_number}`;
-                    }, 1500);
+                    }, 1200);
                 } else {
                     showToast(result.error || 'Failed to place order', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Place Order<i class="fas fa-check ml-2"></i>';
                 }
             } catch (error) {
                 console.error('Error placing order:', error);
-                showToast('Failed to place order', 'error');
+                showToast('Failed to place order. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = 'Place Order<i class="fas fa-check ml-2"></i>';
             }
         }
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCart();
-        });
+        document.addEventListener('DOMContentLoaded', loadCart);
     </script>
 </body>
 </html>

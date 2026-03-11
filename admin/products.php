@@ -176,21 +176,16 @@ $auth->requireAdmin();
                     </div>
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
-                    <input type="hidden" id="product-image">
-                    <div class="flex items-start space-x-4">
-                        <div id="image-preview-wrap" class="hidden w-24 h-24 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
-                            <img id="image-preview" src="" alt="Preview" class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex-1">
-                            <input type="file" id="image-file-input" accept="image/*" class="hidden" onchange="uploadImage(this)">
-                            <button type="button" onclick="document.getElementById('image-file-input').click()"
-                                class="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 text-sm font-medium flex items-center space-x-2">
-                                <i class="fas fa-upload mr-2"></i>Upload Image
-                            </button>
-                            <p id="upload-status" class="text-xs text-gray-500 mt-2">Max 5MB · JPG, PNG, WEBP, GIF</p>
-                        </div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Images</label>
+                    <div id="images-grid" class="flex flex-wrap gap-3 mb-3 min-h-[40px]">
+                        <p class="text-gray-400 text-sm italic">No images uploaded yet</p>
                     </div>
+                    <input type="file" id="image-file-input" accept="image/*" class="hidden" onchange="uploadImage(this)">
+                    <button type="button" onclick="document.getElementById('image-file-input').click()"
+                        class="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 text-sm font-medium flex items-center">
+                        <i class="fas fa-upload mr-2"></i>Add Image
+                    </button>
+                    <p id="upload-status" class="text-xs text-gray-500 mt-2">Max 5MB · JPG, PNG, WEBP, GIF · First image is main by default</p>
                 </div>
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
@@ -221,6 +216,41 @@ $auth->requireAdmin();
     <script>
         let currentPage = 1;
         let categories = [];
+        let uploadedImages = []; // [{url, isMain}]
+
+        function renderImagesGrid() {
+            const grid = document.getElementById('images-grid');
+            if (uploadedImages.length === 0) {
+                grid.innerHTML = '<p class="text-gray-400 text-sm italic">No images uploaded yet</p>';
+                return;
+            }
+            grid.innerHTML = uploadedImages.map((img, i) => `
+                <div class="relative w-24 h-24 rounded-lg overflow-hidden border-2 ${img.isMain ? 'border-blue-500' : 'border-gray-200'} group flex-shrink-0">
+                    <img src="${img.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 p-1">
+                        ${!img.isMain
+                            ? `<button type="button" onclick="setMainImage(${i})" class="text-xs bg-white text-blue-600 px-2 py-0.5 rounded font-medium w-full text-center">Set Main</button>`
+                            : `<span class="text-xs bg-blue-600 text-white px-2 py-0.5 rounded font-medium w-full text-center">Main</span>`
+                        }
+                        <button type="button" onclick="removeImage(${i})" class="text-xs bg-red-500 text-white px-2 py-0.5 rounded font-medium w-full text-center">Remove</button>
+                    </div>
+                    ${img.isMain ? '<span class="absolute top-1 left-1 bg-blue-600 text-white text-xs px-1 rounded leading-4">✓</span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function setMainImage(index) {
+            uploadedImages = uploadedImages.map((img, i) => ({ ...img, isMain: i === index }));
+            renderImagesGrid();
+        }
+
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            if (uploadedImages.length > 0 && !uploadedImages.some(img => img.isMain)) {
+                uploadedImages[0].isMain = true;
+            }
+            renderImagesGrid();
+        }
 
         // Load categories
         async function loadCategories() {
@@ -333,11 +363,11 @@ $auth->requireAdmin();
         async function uploadImage(input) {
             const file = input.files[0];
             if (!file) return;
+            input.value = ''; // reset so same file can be re-selected
 
             const statusEl = document.getElementById('upload-status');
             statusEl.textContent = 'Uploading...';
-            statusEl.classList.remove('text-red-500');
-            statusEl.classList.add('text-gray-500');
+            statusEl.className = 'text-xs text-gray-500 mt-2';
 
             const formData = new FormData();
             formData.append('image', file);
@@ -350,17 +380,17 @@ $auth->requireAdmin();
                 const result = await response.json();
 
                 if (result.success) {
-                    document.getElementById('product-image').value = result.data.url;
-                    document.getElementById('image-preview').src = result.data.url;
-                    document.getElementById('image-preview-wrap').classList.remove('hidden');
+                    const isFirst = uploadedImages.length === 0;
+                    uploadedImages.push({ url: result.data.url, isMain: isFirst });
+                    renderImagesGrid();
                     statusEl.textContent = 'Image uploaded successfully';
                 } else {
                     statusEl.textContent = result.error || 'Upload failed';
-                    statusEl.classList.add('text-red-500');
+                    statusEl.className = 'text-xs text-red-500 mt-2';
                 }
             } catch (e) {
                 statusEl.textContent = 'Upload failed';
-                statusEl.classList.add('text-red-500');
+                statusEl.className = 'text-xs text-red-500 mt-2';
             }
         }
 
@@ -370,10 +400,10 @@ $auth->requireAdmin();
             document.getElementById('modal-title').textContent = 'Add Product';
             document.getElementById('product-form').reset();
             document.getElementById('product-id').value = '';
-            document.getElementById('product-image').value = '';
-            document.getElementById('image-preview-wrap').classList.add('hidden');
-            document.getElementById('image-preview').src = '';
-            document.getElementById('upload-status').textContent = 'Max 5MB · JPG, PNG, WEBP, GIF';
+            document.getElementById('upload-status').textContent = 'Max 5MB · JPG, PNG, WEBP, GIF · First image is main by default';
+            document.getElementById('upload-status').className = 'text-xs text-gray-500 mt-2';
+            uploadedImages = [];
+            renderImagesGrid();
         }
 
         function closeModal() {
@@ -395,17 +425,23 @@ $auth->requireAdmin();
                     document.getElementById('product-stock').value = p.stock_quantity;
                     document.getElementById('product-price').value = p.price;
                     document.getElementById('product-discount').value = p.discount_price || '';
-                    document.getElementById('product-image').value = p.main_image || '';
-                    if (p.main_image) {
-                        document.getElementById('image-preview').src = p.main_image;
-                        document.getElementById('image-preview-wrap').classList.remove('hidden');
-                        document.getElementById('upload-status').textContent = 'Current image loaded';
-                    } else {
-                        document.getElementById('image-preview-wrap').classList.add('hidden');
-                        document.getElementById('upload-status').textContent = 'Max 5MB · JPG, PNG, WEBP, GIF';
-                    }
                     document.getElementById('product-short-desc').value = p.short_description || '';
                     document.getElementById('product-description').value = p.description || '';
+
+                    // Load existing images
+                    if (p.images && p.images.length > 0) {
+                        uploadedImages = p.images.map(img => ({ url: img.image_url, isMain: !!img.is_primary }));
+                    } else if (p.main_image) {
+                        uploadedImages = [{ url: p.main_image, isMain: true }];
+                    } else {
+                        uploadedImages = [];
+                    }
+                    if (uploadedImages.length > 0 && !uploadedImages.some(img => img.isMain)) {
+                        uploadedImages[0].isMain = true;
+                    }
+                    renderImagesGrid();
+                    document.getElementById('upload-status').textContent = 'Max 5MB · JPG, PNG, WEBP, GIF · First image is main by default';
+                    document.getElementById('upload-status').className = 'text-xs text-gray-500 mt-2';
                     document.getElementById('product-featured').checked = p.is_featured;
                     document.getElementById('product-active').checked = p.is_active;
                     
@@ -422,6 +458,7 @@ $auth->requireAdmin();
             event.preventDefault();
             
             const id = document.getElementById('product-id').value;
+            const mainImg = uploadedImages.find(img => img.isMain) || uploadedImages[0] || null;
             const data = {
                 name: document.getElementById('product-name').value,
                 sku: document.getElementById('product-sku').value,
@@ -431,7 +468,8 @@ $auth->requireAdmin();
                 discount_price: document.getElementById('product-discount').value || null,
                 short_description: document.getElementById('product-short-desc').value,
                 description: document.getElementById('product-description').value,
-                main_image: document.getElementById('product-image').value || null,
+                main_image: mainImg ? mainImg.url : null,
+                images: uploadedImages.map(img => ({ url: img.url, isMain: img.isMain })),
                 is_featured: document.getElementById('product-featured').checked,
                 is_active: document.getElementById('product-active').checked
             };

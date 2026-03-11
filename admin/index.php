@@ -184,7 +184,18 @@ $auth->requireAdmin();
                 <!-- Charts Row -->
                 <div class="grid lg:grid-cols-2 gap-6 mb-8">
                     <div class="bg-white rounded-xl shadow-sm p-6">
-                        <h3 class="text-lg font-semibold mb-4">Sales Overview</h3>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-semibold">Sales Overview</h3>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="changeYear(-1)" class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors">
+                                    <i class="fas fa-chevron-left text-xs"></i>
+                                </button>
+                                <span id="sales-year-label" class="text-sm font-medium text-gray-700 w-12 text-center"></span>
+                                <button onclick="changeYear(1)" id="sales-year-next" class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-500 hover:text-gray-700 transition-colors">
+                                    <i class="fas fa-chevron-right text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
                         <canvas id="salesChart" height="250"></canvas>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-6">
@@ -235,6 +246,66 @@ $auth->requireAdmin();
 
     <script>
         let salesChart, ordersChart;
+        let currentYear = new Date().getFullYear();
+        const currentRealYear = new Date().getFullYear();
+        const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+        function changeYear(delta) {
+            const newYear = currentYear + delta;
+            if (newYear > currentRealYear) return;
+            currentYear = newYear;
+            loadSalesChart();
+        }
+
+        async function loadSalesChart() {
+            document.getElementById('sales-year-label').textContent = currentYear;
+            document.getElementById('sales-year-next').disabled = currentYear >= currentRealYear;
+            document.getElementById('sales-year-next').style.opacity = currentYear >= currentRealYear ? '0.3' : '1';
+
+            try {
+                const response = await fetch(`../backend/api/dashboard.php?year=${currentYear}`);
+                const result = await response.json();
+                if (!result.success) return;
+
+                const monthlyData = result.data.monthly_sales || [];
+                const revenueByMonth = {};
+                monthlyData.forEach(m => {
+                    const idx = new Date(m.month).getMonth();
+                    revenueByMonth[idx] = parseFloat(m.revenue) || 0;
+                });
+                const salesValues = MONTH_LABELS.map((_, i) => revenueByMonth[i] || 0);
+
+                if (salesChart) {
+                    salesChart.data.datasets[0].data = salesValues;
+                    salesChart.update();
+                } else {
+                    const salesCtx = document.getElementById('salesChart').getContext('2d');
+                    salesChart = new Chart(salesCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: MONTH_LABELS,
+                            datasets: [{
+                                label: 'Revenue',
+                                data: salesValues,
+                                backgroundColor: 'rgba(37, 99, 235, 0.75)',
+                                borderRadius: 6,
+                                borderSkipped: false
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: { legend: { display: false } },
+                            scales: {
+                                y: { beginAtZero: true, ticks: { callback: v => 'KSh ' + v.toLocaleString() } },
+                                x: { grid: { display: false } }
+                            }
+                        }
+                    });
+                }
+            } catch (e) {
+                console.error('Error loading sales chart:', e);
+            }
+        }
 
         // Load dashboard data
         async function loadDashboard() {
@@ -282,6 +353,7 @@ $auth->requireAdmin();
 
                     // Render charts
                     renderCharts(data);
+                    loadSalesChart();
                 }
             } catch (error) {
                 console.error('Error loading dashboard:', error);
@@ -302,48 +374,31 @@ $auth->requireAdmin();
 
         // Render charts
         function renderCharts(data) {
-            // Sales Chart
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
-            const monthlyData = data.monthly_sales || [];
-            
-            salesChart = new Chart(salesCtx, {
-                type: 'line',
-                data: {
-                    labels: monthlyData.map(m => new Date(m.month).toLocaleDateString('en-US', { month: 'short' })),
-                    datasets: [{
-                        label: 'Revenue',
-                        data: monthlyData.map(m => m.revenue),
-                        borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { callback: v => 'KSh ' + v } }
-                    }
-                }
-            });
+            // Sales chart is handled separately by loadSalesChart()
 
             // Orders Chart
             const ordersCtx = document.getElementById('ordersChart').getContext('2d');
             const statusData = data.orders_by_status || [];
             
             ordersChart = new Chart(ordersCtx, {
-                type: 'doughnut',
+                type: 'bar',
                 data: {
-                    labels: statusData.map(s => s.status),
+                    labels: statusData.map(s => s.status.charAt(0).toUpperCase() + s.status.slice(1)),
                     datasets: [{
+                        label: 'Orders',
                         data: statusData.map(s => s.count),
-                        backgroundColor: ['#fbbf24', '#3b82f6', '#a855f7', '#10b981', '#ef4444']
+                        backgroundColor: ['#fbbf24', '#3b82f6', '#a855f7', '#10b981', '#ef4444'],
+                        borderRadius: 6,
+                        borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
-                    plugins: { legend: { position: 'bottom' } }
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false } }
+                    }
                 }
             });
         }

@@ -5,6 +5,11 @@
 
 require_once __DIR__ . '/config.php';
 
+// Buffer all output so stray warnings/notices can't corrupt JSON responses
+if (ob_get_level() === 0) {
+    ob_start();
+}
+
 class Database {
     private static $instance = null;
     private $connection;
@@ -91,6 +96,10 @@ function formatPrice($price) {
 
 // Helper function to send JSON response
 function jsonResponse($data, $statusCode = 200) {
+    // Discard any stray output (PHP warnings/notices) that would corrupt JSON
+    if (ob_get_level() > 0) {
+        ob_end_clean();
+    }
     header('Content-Type: application/json; charset=UTF-8');
     http_response_code($statusCode);
     echo json_encode($data);

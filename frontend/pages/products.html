@@ -168,6 +168,18 @@
                             <button onclick="clearFilters()" class="text-sm text-primary-600 hover:text-primary-700">Clear All</button>
                         </div>
 
+                        <!-- Search -->
+                        <div class="mb-8">
+                            <h4 class="font-medium mb-4">Search</h4>
+                            <div class="relative">
+                                <input type="text" id="sidebar-search" placeholder="Search products..."
+                                    value=""
+                                    class="w-full px-4 py-2 pr-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                                    oninput="debouncedSidebarSearch()">
+                                <i class="fas fa-search absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            </div>
+                        </div>
+
                         <!-- Categories -->
                         <div class="mb-8">
                             <h4 class="font-medium mb-4">Categories</h4>
@@ -271,7 +283,7 @@
                 </div>
             </div>
             <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-500">
-                <p>&copy; 2024 Primex Mattress & Beddings. All rights reserved.</p>
+                <p>&copy; 2026 Primex Mattress & Beddings. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -294,6 +306,17 @@
             max_price: 2000,
             sort: 'featured'
         };
+
+        // Sidebar search with debounce
+        let sidebarSearchTimer;
+        function debouncedSidebarSearch() {
+            clearTimeout(sidebarSearchTimer);
+            sidebarSearchTimer = setTimeout(() => {
+                currentFilters.search = document.getElementById('sidebar-search').value.trim();
+                currentPage = 1;
+                loadProducts();
+            }, 300);
+        }
 
         // Load categories for filters
         async function loadCategories() {
@@ -482,7 +505,7 @@
                 sort: 'featured'
             };
             currentPage = 1;
-            
+
             // Reset UI
             document.querySelectorAll('.filter-checkbox').forEach(cb => cb.checked = false);
             document.getElementById('min-price').value = 0;
@@ -490,7 +513,8 @@
             document.getElementById('min-price-display').textContent = '0';
             document.getElementById('max-price-display').textContent = '2000';
             document.getElementById('sort-select').value = 'featured';
-            
+            document.getElementById('sidebar-search').value = '';
+
             loadProducts();
         }
 
@@ -521,9 +545,9 @@
             loadProducts();
             getCart().then(data => updateCartCount(data.totals ? data.totals.item_count : 0));
             
-            // Update search input if search param exists
+            // Pre-fill sidebar search if search param exists
             if (currentFilters.search) {
-                document.getElementById('search-input').value = currentFilters.search;
+                document.getElementById('sidebar-search').value = currentFilters.search;
             }
         });
     </script>

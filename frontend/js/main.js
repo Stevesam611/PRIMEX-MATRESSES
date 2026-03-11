@@ -125,7 +125,7 @@ function toggleMobileMenu() {
 function performSearch() {
     const searchInput = document.getElementById('search-input');
     if (searchInput && searchInput.value.trim()) {
-        window.location.href = `pages/products.html?search=${encodeURIComponent(searchInput.value.trim())}`;
+        window.location.href = `/PRIMEX-MATRESSES/frontend/pages/products.html?search=${encodeURIComponent(searchInput.value.trim())}`;
     }
 }
 
