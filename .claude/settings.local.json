@@ -15,7 +15,9 @@
       "Bash(chmod 777 /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/backend/uploads)",
       "Bash(wc -l /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/admin/*.php)",
       "Bash(for f:*)",
-      "Bash(do echo:*)"
+      "Bash(do echo:*)",
+      "Bash(/Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/frontend/index.html:*)",
+      "Bash(head -10 grep -n \"Home\\\\|index.html\" /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/frontend/pages/product-detail.html)"
     ]
   }
 }
