@@ -3,6 +3,9 @@
 # Enable rewrite engine
 RewriteEngine On
 
+# Redirect root to frontend
+RewriteRule ^$ /PRIMEX-MATRESSES/frontend/ [L,R=302]
+
 # Protect sensitive files
 <FilesMatch "^\.">
     Order allow,deny

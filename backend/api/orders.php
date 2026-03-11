@@ -3,7 +3,7 @@
  * Primex Mattress & Beddings - Orders API
  */
 
-require_once __DIR__ . '/../includes/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 session_start();
 $method = $_SERVER['REQUEST_METHOD'];
@@ -125,7 +125,7 @@ try {
                     'billing_zip' => $data['billing']['zip'],
                     'billing_country' => $data['billing']['country'] ?? 'USA',
                     'subtotal' => $data['subtotal'],
-                    'shipping_cost' => $data['shipping'],
+                    'shipping_cost' => $data['shipping_cost'] ?? 0,
                     'tax_amount' => $data['tax'],
                     'discount_amount' => $data['discount'] ?? 0,
                     'total_amount' => $data['total'],

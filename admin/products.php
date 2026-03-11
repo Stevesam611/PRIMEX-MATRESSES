@@ -176,6 +176,10 @@ $auth->requireAdmin();
                     </div>
                 </div>
                 <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                    <input type="text" id="product-image" placeholder="https://... or images/products/..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                </div>
+                <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
                     <input type="text" id="product-short-desc" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
                 </div>
@@ -212,9 +216,10 @@ $auth->requireAdmin();
                 const result = await response.json();
                 if (result.success) {
                     categories = result.data;
-                    const options = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-                    document.getElementById('category-filter').innerHTML = '<option value="">All Categories</option>' + options;
-                    document.getElementById('product-category').innerHTML = options;
+                    const filterOptions = categories.map(c => `<option value="${c.slug}">${c.name}</option>`).join('');
+                    const formOptions = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                    document.getElementById('category-filter').innerHTML = '<option value="">All Categories</option>' + filterOptions;
+                    document.getElementById('product-category').innerHTML = formOptions;
                 }
             } catch (error) {
                 console.error('Error loading categories:', error);
@@ -338,6 +343,7 @@ $auth->requireAdmin();
                     document.getElementById('product-stock').value = p.stock_quantity;
                     document.getElementById('product-price').value = p.price;
                     document.getElementById('product-discount').value = p.discount_price || '';
+                    document.getElementById('product-image').value = p.main_image || '';
                     document.getElementById('product-short-desc').value = p.short_description || '';
                     document.getElementById('product-description').value = p.description || '';
                     document.getElementById('product-featured').checked = p.is_featured;
@@ -365,6 +371,7 @@ $auth->requireAdmin();
                 discount_price: document.getElementById('product-discount').value || null,
                 short_description: document.getElementById('product-short-desc').value,
                 description: document.getElementById('product-description').value,
+                main_image: document.getElementById('product-image').value || null,
                 is_featured: document.getElementById('product-featured').checked,
                 is_active: document.getElementById('product-active').checked
             };

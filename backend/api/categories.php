@@ -3,7 +3,7 @@
  * Primex Mattress & Beddings - Categories API
  */
 
-require_once __DIR__ . '/../includes/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $db = Database::getInstance();

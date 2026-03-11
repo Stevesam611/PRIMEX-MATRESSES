@@ -3,7 +3,7 @@
  */
 
 // API Base URL
-const API_BASE_URL = '../backend/api';
+const API_BASE_URL = '/PRIMEX-MATRESSES/backend/api';
 
 // Cart Functions
 async function getCart() {

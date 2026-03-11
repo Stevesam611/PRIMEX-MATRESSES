@@ -7,13 +7,13 @@
 define('DB_HOST', 'localhost');
 define('DB_PORT', '5432');
 define('DB_NAME', 'primex_mattress');
-define('DB_USER', 'postgres');
-define('DB_PASS', 'your_password_here');
+define('DB_USER', 'johnnjenga');
+define('DB_PASS', '');
 
 // Application Configuration
 define('APP_NAME', 'Primex Mattress & Beddings');
-define('APP_URL', 'http://localhost/primex-mattress');
-define('ADMIN_URL', 'http://localhost/primex-mattress/admin');
+define('APP_URL', 'http://localhost/PRIMEX-MATRESSES');
+define('ADMIN_URL', 'http://localhost/PRIMEX-MATRESSES/admin');
 define('UPLOAD_PATH', __DIR__ . '/../uploads/');
 define('UPLOAD_URL', APP_URL . '/backend/uploads/');
 
@@ -43,7 +43,6 @@ date_default_timezone_set('America/New_York');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-header('Content-Type: application/json; charset=UTF-8');
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

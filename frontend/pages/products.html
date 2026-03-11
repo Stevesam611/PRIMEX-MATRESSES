@@ -298,7 +298,7 @@
         // Load categories for filters
         async function loadCategories() {
             try {
-                const response = await fetch('../backend/api/categories.php');
+                const response = await fetch('/PRIMEX-MATRESSES/backend/api/categories.php');
                 const result = await response.json();
                 
                 if (result.success) {
@@ -327,7 +327,7 @@
         // Load products
         async function loadProducts() {
             try {
-                let url = `../backend/api/products.php?page=${currentPage}&limit=12`;
+                let url = `/PRIMEX-MATRESSES/backend/api/products.php?page=${currentPage}&limit=12`;
                 
                 if (currentFilters.category) url += `&category=${encodeURIComponent(currentFilters.category)}`;
                 if (currentFilters.search) url += `&search=${encodeURIComponent(currentFilters.search)}`;
@@ -519,7 +519,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadCategories();
             loadProducts();
-            updateCartCount();
+            getCart().then(data => updateCartCount(data.totals ? data.totals.item_count : 0));
             
             // Update search input if search param exists
             if (currentFilters.search) {

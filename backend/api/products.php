@@ -3,7 +3,7 @@
  * Primex Mattress & Beddings - Products API
  */
 
-require_once __DIR__ . '/../includes/database.php';
+require_once __DIR__ . '/../includes/auth.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $db = Database::getInstance();
@@ -145,19 +145,20 @@ try {
             
             $data = json_decode(file_get_contents('php://input'), true);
             
-            $sql = "INSERT INTO products (name, slug, description, short_description, price, discount_price, sku, stock_quantity, category_id, specifications, features, is_featured, weight, dimensions, warranty) 
-                    VALUES (:name, :slug, :description, :short_description, :price, :discount_price, :sku, :stock_quantity, :category_id, :specifications, :features, :is_featured, :weight, :dimensions, :warranty)";
-            
+            $sql = "INSERT INTO products (name, slug, description, short_description, price, discount_price, sku, stock_quantity, category_id, main_image, specifications, features, is_featured, weight, dimensions, warranty)
+                    VALUES (:name, :slug, :description, :short_description, :price, :discount_price, :sku, :stock_quantity, :category_id, :main_image, :specifications, :features, :is_featured, :weight, :dimensions, :warranty)";
+
             $params = [
                 'name' => $data['name'],
                 'slug' => generateSlug($data['name']),
-                'description' => $data['description'],
-                'short_description' => $data['short_description'],
+                'description' => $data['description'] ?? null,
+                'short_description' => $data['short_description'] ?? null,
                 'price' => $data['price'],
-                'discount_price' => $data['discount_price'] ?? null,
-                'sku' => $data['sku'],
+                'discount_price' => !empty($data['discount_price']) ? $data['discount_price'] : null,
+                'sku' => $data['sku'] ?? null,
                 'stock_quantity' => $data['stock_quantity'] ?? 0,
                 'category_id' => $data['category_id'],
+                'main_image' => $data['main_image'] ?? null,
                 'specifications' => json_encode($data['specifications'] ?? []),
                 'features' => json_encode($data['features'] ?? []),
                 'is_featured' => $data['is_featured'] ?? false,
@@ -179,21 +180,22 @@ try {
             $data = json_decode(file_get_contents('php://input'), true);
             $id = $data['id'];
             
-            $sql = "UPDATE products SET 
-                    name = :name, 
-                    description = :description, 
-                    short_description = :short_description, 
-                    price = :price, 
-                    discount_price = :discount_price, 
-                    sku = :sku, 
-                    stock_quantity = :stock_quantity, 
-                    category_id = :category_id, 
-                    specifications = :specifications, 
-                    features = :features, 
-                    is_featured = :is_featured, 
+            $sql = "UPDATE products SET
+                    name = :name,
+                    description = :description,
+                    short_description = :short_description,
+                    price = :price,
+                    discount_price = :discount_price,
+                    sku = :sku,
+                    stock_quantity = :stock_quantity,
+                    category_id = :category_id,
+                    main_image = :main_image,
+                    specifications = :specifications,
+                    features = :features,
+                    is_featured = :is_featured,
                     is_active = :is_active,
-                    weight = :weight, 
-                    dimensions = :dimensions, 
+                    weight = :weight,
+                    dimensions = :dimensions,
                     warranty = :warranty,
                     updated_at = NOW()
                     WHERE id = :id";
@@ -204,10 +206,11 @@ try {
                 'description' => $data['description'],
                 'short_description' => $data['short_description'],
                 'price' => $data['price'],
-                'discount_price' => $data['discount_price'] ?? null,
-                'sku' => $data['sku'],
+                'discount_price' => !empty($data['discount_price']) ? $data['discount_price'] : null,
+                'sku' => $data['sku'] ?? null,
                 'stock_quantity' => $data['stock_quantity'],
                 'category_id' => $data['category_id'],
+                'main_image' => $data['main_image'] ?? null,
                 'specifications' => json_encode($data['specifications'] ?? []),
                 'features' => json_encode($data['features'] ?? []),
                 'is_featured' => $data['is_featured'],

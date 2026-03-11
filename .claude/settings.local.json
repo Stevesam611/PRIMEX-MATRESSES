@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(psql -U johnnjenga -p 5432 -c '\\\\l')",
+      "Bash(psql -U johnnjenga -p 5432 -d postgres -c '\\\\l')",
+      "Bash(psql -U johnnjenga -p 5432 -d postgres -c 'CREATE DATABASE primex_mattress;')",
+      "Bash(psql -U johnnjenga -p 5432 -d primex_mattress -f /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/database/schema.sql)",
+      "Bash(/Applications/XAMPP/xamppfiles/bin/php -r \":*)",
+      "Bash(php -r \":*)"
+    ]
+  }
+}

@@ -269,14 +269,14 @@
             }
 
             try {
-                const response = await fetch(`../backend/api/products.php?slug=${slug}`);
+                const response = await fetch(`/PRIMEX-MATRESSES/backend/api/products.php?slug=${slug}`);
                 const result = await response.json();
 
                 if (result.success && result.data) {
                     currentProduct = result.data;
                     productId = currentProduct.id;
                     displayProduct(currentProduct);
-                    loadRelatedProducts(currentProduct.category_id);
+                    loadRelatedProducts(currentProduct.category_slug);
                 } else {
                     window.location.href = 'products.html';
                 }
@@ -432,7 +432,7 @@
         // Load related products
         async function loadRelatedProducts(categoryId) {
             try {
-                const response = await fetch(`../backend/api/products.php?category=${categoryId}&limit=4`);
+                const response = await fetch(`/PRIMEX-MATRESSES/backend/api/products.php?category=${categoryId}&limit=5`);
                 const result = await response.json();
 
                 if (result.success && result.data.products) {
@@ -464,7 +464,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadProduct();
-            updateCartCount();
+            getCart().then(data => updateCartCount(data.totals ? data.totals.item_count : 0));
         });
     </script>
 </body>
