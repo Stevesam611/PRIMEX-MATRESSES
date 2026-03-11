@@ -13,7 +13,9 @@
       "Read(//Applications/XAMPP/xamppfiles/logs/**)",
       "Bash(chmod 777 /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/backend/uploads/products)",
       "Bash(chmod 777 /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/backend/uploads)",
-      "Bash(wc -l /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/admin/*.php)"
+      "Bash(wc -l /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/admin/*.php)",
+      "Bash(for f:*)",
+      "Bash(do echo:*)"
     ]
   }
 }

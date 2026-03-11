@@ -93,6 +93,14 @@ $auth->requireAdmin();
                     <i class="fas fa-users w-5"></i>
                     <span class="font-medium">Customers</span>
                 </a>
+                <a href="reviews.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg">
+                    <i class="fas fa-star w-5"></i>
+                    <span class="font-medium">Reviews</span>
+                </a>
+                <a href="messages.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg">
+                    <i class="fas fa-envelope w-5"></i>
+                    <span class="font-medium">Messages</span>
+                </a>
             </nav>
             
             <div class="absolute bottom-0 w-64 p-4 border-t border-gray-100">

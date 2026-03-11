@@ -452,127 +452,26 @@
         </div>
     </section>
 
-    <!-- Newsletter Section -->
-    <section class="py-20 bg-accent-500">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center section-fade">
-            <h2 class="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4">Get 15% Off Your First Order</h2>
-            <p class="text-gray-800 mb-8 text-lg">Subscribe to our newsletter for exclusive deals, sleep tips, and new product announcements.</p>
-            <form class="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto" onsubmit="subscribeNewsletter(event)">
-                <input type="email" placeholder="Enter your email" required
-                    class="flex-1 px-6 py-4 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 text-gray-900">
-                <button type="submit" class="px-8 py-4 bg-gray-900 text-white font-semibold rounded-full hover:bg-gray-800 transition-colors">
-                    Subscribe
-                </button>
-            </form>
-            <p class="text-gray-700 text-sm mt-4">No spam, unsubscribe anytime. By subscribing, you agree to our Privacy Policy.</p>
-        </div>
-    </section>
-
     <!-- Footer -->
-    <footer class="bg-gray-900 text-white py-16">
+    <footer class="bg-gray-900 text-white py-6">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
-                <!-- Company Info -->
-                <div>
-                    <div class="flex items-center space-x-2 mb-6">
-                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
-                            <i class="fas fa-bed text-white text-lg"></i>
-                        </div>
-                        <span class="text-2xl font-serif font-bold">Primex</span>
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bed text-white text-sm"></i>
                     </div>
-                    <p class="text-gray-400 mb-2">Quality, Durable, Affordable Products.</p>
-                    <p class="text-gray-400 mb-6">Premium mattresses and bedding for your perfect sleep.</p>
-                    <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary-600 transition-colors">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                    </div>
+                    <span class="font-serif font-bold text-lg">Primex</span>
+                    <span class="text-gray-500 text-sm ml-2">Quality, Durable, Affordable Products</span>
                 </div>
-
-                <!-- Quick Links -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6">Quick Links</h3>
-                    <ul class="space-y-3">
-                        <li><a href="index.html" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
-                        <li><a href="pages/products.html" class="text-gray-400 hover:text-white transition-colors">Products</a></li>
-                        <li><a href="pages/products.html?category=mattresses" class="text-gray-400 hover:text-white transition-colors">Mattresses</a></li>
-                        <li><a href="pages/products.html?category=bedding-sets" class="text-gray-400 hover:text-white transition-colors">Bedding</a></li>
-                        <li><a href="pages/contact.html" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-
-                <!-- Customer Service -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6">Customer Service</h3>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Info</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns & Exchanges</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Warranty</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Size Guide</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contact Info -->
-                <div>
-                    <h3 class="text-lg font-semibold mb-6">Contact Us</h3>
-                    <ul class="space-y-4">
-                        <li class="flex items-start space-x-3">
-                            <i class="fas fa-map-marker-alt text-primary-500 mt-1"></i>
-                            <span class="text-gray-400">Langalanga, Nakuru, Kenya</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-phone text-primary-500"></i>
-                            <span class="text-gray-400">0115896001</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-phone text-primary-500"></i>
-                            <span class="text-gray-400">0768274937</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-envelope text-primary-500"></i>
-                            <span class="text-gray-400">mattressgoodnight@gmail.com</span>
-                        </li>
-                        <li class="flex items-center space-x-3">
-                            <i class="fas fa-clock text-primary-500"></i>
-                            <span class="text-gray-400">Open 24/7</span>
-                        </li>
-                    </ul>
+                <div class="flex flex-wrap items-center justify-center gap-4 text-gray-400 text-sm">
+                    <span><i class="fas fa-map-marker-alt mr-1 text-primary-400"></i> Langalanga, Nakuru</span>
+                    <span><i class="fas fa-phone mr-1 text-primary-400"></i> 0115896001</span>
+                    <span><i class="fas fa-envelope mr-1 text-primary-400"></i> mattressgoodnight@gmail.com</span>
+                    <span><i class="fas fa-clock mr-1 text-green-400"></i> Open 24/7</span>
                 </div>
             </div>
-
-            <!-- Payment Methods -->
-            <div class="border-t border-gray-800 mt-12 pt-8">
-                <div class="flex flex-wrap justify-center gap-3 mb-8">
-                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
-                        <i class="fas fa-credit-card text-blue-400"></i> Visa
-                    </div>
-                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
-                        <i class="fas fa-credit-card text-yellow-400"></i> Mastercard
-                    </div>
-                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
-                        <i class="fas fa-mobile-alt text-green-400"></i> M-Pesa
-                    </div>
-                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
-                        <i class="fas fa-university text-purple-400"></i> Bank Transfer
-                    </div>
-                    <div class="bg-gray-800 rounded-lg px-4 py-2 flex items-center gap-2 text-gray-400 text-sm">
-                        <i class="fas fa-money-bill-wave text-emerald-400"></i> Cash on Delivery
-                    </div>
-                </div>
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p class="text-gray-500 text-sm">&copy; 2026 Primex Mattress & Beddings. All rights reserved.</p>
-                    <div class="flex space-x-6">
-                        <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Privacy Policy</a>
-                        <a href="#" class="text-gray-500 hover:text-white text-sm transition-colors">Terms of Service</a>
-                    </div>
-                </div>
+            <div class="border-t border-gray-800 mt-4 pt-4 text-center text-gray-600 text-xs">
+                &copy; 2026 Primex Mattress & Beddings. All rights reserved.
             </div>
         </div>
     </footer>
