@@ -73,12 +73,34 @@
                     <a href="contact.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Contact</a>
                 </div>
 
-                <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-3">
+                    <!-- Account -->
+                    <div class="relative hidden md:block" id="account-menu-wrap">
+                        <button onclick="toggleAccountMenu()" class="flex items-center gap-1.5 px-3 py-2 text-gray-600 hover:text-primary-600 rounded-xl hover:bg-primary-50 transition-colors text-sm font-medium">
+                            <i class="fas fa-user-circle text-xl"></i>
+                            <span id="account-label" class="hidden sm:inline">Account</span>
+                        </button>
+                        <div id="account-dropdown" class="hidden absolute right-0 top-12 bg-white rounded-xl shadow-xl border border-gray-100 w-52 z-50 py-2"></div>
+                    </div>
                     <a href="cart.html" class="p-2 text-primary-600 relative">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-accent-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
                     </a>
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-gray-600 hover:text-primary-600">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
                 </div>
+            </div>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100">
+            <div class="px-4 py-4 space-y-3">
+                <a href="products.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Products</a>
+                <a href="products.html?category=mattresses" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Mattresses</a>
+                <a href="contact.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium">Contact</a>
+                <hr class="border-gray-100">
+                <a href="my-orders.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium"><i class="fas fa-box mr-2"></i>My Orders</a>
+                <a href="login.html" class="block py-2 text-gray-700 hover:text-primary-600 font-medium"><i class="fas fa-user-circle mr-2"></i>Account</a>
             </div>
         </div>
     </nav>
@@ -305,6 +327,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadCart();
+            initUserAccount();
         });
     </script>
 </body>

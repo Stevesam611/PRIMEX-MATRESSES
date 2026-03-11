@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Primex Mattress & Beddings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: {
+                colors: {
+                    primary:   { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8' },
+                    secondary: { 50:'#faf5ff',100:'#f3e8ff',500:'#a855f7',600:'#9333ea',700:'#7c3aed' },
+                    accent:    { 400:'#facc15',500:'#eab308' }
+                },
+                fontFamily: { sans:['Inter','sans-serif'], serif:['Playfair Display','serif'] }
+            }}
+        }
+    </script>
+    <style>
+        .nav-link::after { content:''; position:absolute; bottom:-4px; left:0; width:0; height:2px; background:linear-gradient(90deg,#eab308,#facc15); transition:width .3s; }
+        .nav-link { position:relative; }
+        .nav-link:hover::after { width:100%; }
+        .status-pending    { background:#fef9c3; color:#854d0e; }
+        .status-processing { background:#dbeafe; color:#1e40af; }
+        .status-shipped    { background:#e0e7ff; color:#3730a3; }
+        .status-delivered  { background:#dcfce7; color:#166534; }
+        .status-cancelled  { background:#fee2e2; color:#991b1b; }
+    </style>
+</head>
+<body class="font-sans bg-gray-50 min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-white/95 backdrop-blur-md shadow-sm" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <a href="products.html" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bed text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-serif font-bold bg-gradient-to-r from-primary-700 to-secondary-700 bg-clip-text text-transparent">Primex</span>
+                </a>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="products.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Products</a>
+                    <a href="products.html?category=mattresses" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Mattresses</a>
+                    <a href="products.html?category=bedding-sets" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Bedding</a>
+                    <a href="contact.html" class="nav-link text-gray-700 hover:text-primary-600 font-medium">Contact</a>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <a href="cart.html" class="p-2 text-gray-600 hover:text-primary-600 relative">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 w-5 h-5 bg-accent-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
+                    </a>
+                    <!-- Account -->
+                    <div class="relative" id="account-menu-wrap">
+                        <button onclick="toggleAccountMenu()" class="flex items-center gap-2 px-3 py-2 bg-primary-50 text-primary-700 rounded-xl text-sm font-medium hover:bg-primary-100 transition-colors" id="account-btn">
+                            <i class="fas fa-user-circle text-lg"></i>
+                            <span id="account-label">Account</span>
+                        </button>
+                        <div id="account-dropdown" class="hidden absolute right-0 top-12 bg-white rounded-xl shadow-xl border border-gray-100 w-56 z-50 py-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="pt-28 pb-16 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+                <h1 class="text-3xl font-serif font-bold text-gray-900">My Orders</h1>
+                <p id="user-greeting" class="text-gray-500 mt-1 text-sm"></p>
+            </div>
+            <a href="products.html" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
+                <i class="fas fa-shopping-bag text-xs"></i> Continue Shopping
+            </a>
+        </div>
+
+        <!-- Orders Container -->
+        <div id="orders-container">
+            <div class="text-center py-20 text-gray-400">
+                <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+                <p>Loading your orders...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="order-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+                <h2 class="text-lg font-bold text-gray-900" id="modal-title">Order Details</h2>
+                <div class="flex items-center gap-2">
+                    <button onclick="cancelOrder(currentOrder?.id)" id="cancel-btn" class="hidden items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium">
+                        <i class="fas fa-times-circle"></i>
+                        <span>Cancel Order</span>
+                    </button>
+                    <button onclick="printInvoice()" id="print-btn" class="hidden flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                        <i class="fas fa-print"></i>
+                        <span>Print Invoice</span>
+                    </button>
+                    <button onclick="closeModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+                        <i class="fas fa-times text-gray-500"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="modal-body" class="p-6"></div>
+        </div>
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        const API_USER = '/PRIMEX-MATRESSES/backend/api/user-auth.php';
+        const API_ORDERS = '/PRIMEX-MATRESSES/backend/api/user-orders.php';
+
+        // ── Auth Check ────────────────────────────────────────────────────
+        async function checkAuth() {
+            const res    = await fetch(`${API_USER}?action=check`);
+            const result = await res.json();
+            if (!result.success || !result.data.logged_in) {
+                window.location.href = 'login.html?redirect=my-orders.html';
+                return null;
+            }
+            return result.data;
+        }
+
+        // ── Account Dropdown ─────────────────────────────────────────────
+        function toggleAccountMenu() {
+            document.getElementById('account-dropdown').classList.toggle('hidden');
+        }
+        document.addEventListener('click', e => {
+            const wrap = document.getElementById('account-menu-wrap');
+            if (wrap && !wrap.contains(e.target)) document.getElementById('account-dropdown')?.classList.add('hidden');
+        });
+
+        async function userSignOut() {
+            await fetch(API_USER, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({action:'logout'}) });
+            window.location.href = 'products.html';
+        }
+
+        // ── Status Badge ─────────────────────────────────────────────────
+        function statusBadge(status) {
+            const s = (status || 'pending').toLowerCase();
+            const labels = { pending:'Pending', processing:'Processing', shipped:'Shipped', delivered:'Delivered', cancelled:'Cancelled' };
+            return `<span class="px-2.5 py-1 rounded-full text-xs font-semibold status-${s}">${labels[s] || s}</span>`;
+        }
+
+        function payBadge(status) {
+            const s = (status || 'pending').toLowerCase();
+            const colors = { paid:'bg-green-100 text-green-700', pending:'bg-yellow-100 text-yellow-700', failed:'bg-red-100 text-red-700' };
+            return `<span class="px-2 py-0.5 rounded-full text-xs font-medium ${colors[s] || colors.pending}">${s.charAt(0).toUpperCase()+s.slice(1)}</span>`;
+        }
+
+        function fmtDate(d) {
+            return new Date(d).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+        }
+        function fmtPrice(p) {
+            return 'KSh ' + parseFloat(p).toLocaleString('en-KE', { minimumFractionDigits:0 });
+        }
+
+        // ── Render Orders Table ──────────────────────────────────────────
+        function renderOrders(orders) {
+            const container = document.getElementById('orders-container');
+
+            if (!orders.length) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl shadow-sm p-16 text-center">
+                        <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                            <i class="fas fa-box-open text-3xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">No orders yet</h3>
+                        <p class="text-gray-400 mb-6">You haven't placed any orders. Start shopping!</p>
+                        <a href="products.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity">
+                            <i class="fas fa-shopping-bag"></i> Shop Now
+                        </a>
+                    </div>`;
+                return;
+            }
+
+            // Summary card
+            const total = orders.reduce((s, o) => s + parseFloat(o.total_amount), 0);
+            const delivered = orders.filter(o => o.status === 'delivered').length;
+
+            container.innerHTML = `
+                <!-- Summary -->
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
+                        <div class="w-11 h-11 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-receipt text-primary-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Total Orders</p>
+                            <p class="text-2xl font-bold text-gray-900">${orders.length}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
+                        <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Delivered</p>
+                            <p class="text-2xl font-bold text-gray-900">${delivered}</p>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm p-5 flex items-center gap-4">
+                        <div class="w-11 h-11 bg-accent-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-wallet text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-medium">Total Spent</p>
+                            <p class="text-lg font-bold text-gray-900">${fmtPrice(total)}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50 border-b border-gray-100">
+                                <tr>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Order</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Items</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="text-left px-6 py-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment</th>
+                                    <th class="px-6 py-4"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                                ${orders.map(o => `
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-gray-900">#${escHtml(o.order_number)}</p>
+                                        <p class="text-xs text-gray-400">${escHtml(o.shipping_city || '')}</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-gray-600">${fmtDate(o.created_at)}</td>
+                                    <td class="px-6 py-4 text-gray-600">${o.item_count} item${o.item_count != 1 ? 's' : ''}</td>
+                                    <td class="px-6 py-4 font-semibold text-gray-900">${fmtPrice(o.total_amount)}</td>
+                                    <td class="px-6 py-4">${statusBadge(o.status)}</td>
+                                    <td class="px-6 py-4">${payBadge(o.payment_status)}</td>
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <button onclick="viewOrder(${o.id})"
+                                                class="px-3 py-1.5 text-xs font-semibold text-primary-600 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors">
+                                                View
+                                            </button>
+                                            <button onclick="quickPrint(${o.id})"
+                                                class="px-3 py-1.5 text-xs font-semibold text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors" title="Print Invoice">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                            ${o.status === 'pending' ? `
+                                            <button onclick="cancelOrder(${o.id})"
+                                                class="px-3 py-1.5 text-xs font-semibold text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors" title="Cancel Order">
+                                                Cancel
+                                            </button>` : ''}
+                                        </div>
+                                    </td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>`;
+        }
+
+        // ── Order Detail Modal ───────────────────────────────────────────
+        let currentOrder = null;
+
+        async function viewOrder(id) {
+            document.getElementById('modal-body').innerHTML = '<div class="text-center py-10 text-gray-400"><i class="fas fa-spinner fa-spin text-2xl"></i></div>';
+            document.getElementById('print-btn').classList.add('hidden');
+            document.getElementById('order-modal').classList.remove('hidden');
+
+            const res    = await fetch(`${API_ORDERS}?id=${id}`);
+            const result = await res.json();
+            if (!result.success) { closeModal(); return; }
+
+            const o = result.data;
+            currentOrder = o;
+            document.getElementById('modal-title').textContent = `Order #${o.order_number}`;
+            document.getElementById('print-btn').classList.remove('hidden');
+            const cancelBtn = document.getElementById('cancel-btn');
+            if (o.status === 'pending') cancelBtn.classList.remove('hidden');
+            else cancelBtn.classList.add('hidden');
+
+            const items = (o.items || []).map(item => `
+                <div class="flex items-center gap-4 py-3 border-b border-gray-50 last:border-0">
+                    <div class="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
+                        ${item.main_image
+                            ? `<img src="${escHtml(item.main_image)}" class="w-full h-full object-cover">`
+                            : `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-bed text-gray-300 text-xl"></i></div>`}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 text-sm truncate">${escHtml(item.product_name)}</p>
+                        <p class="text-xs text-gray-400">Qty: ${item.quantity}</p>
+                    </div>
+                    <p class="font-semibold text-gray-900 text-sm flex-shrink-0">${fmtPrice(item.total_price)}</p>
+                </div>`).join('');
+
+            document.getElementById('modal-body').innerHTML = `
+                <div class="flex flex-wrap gap-3 mb-6">
+                    ${statusBadge(o.status)} ${payBadge(o.payment_status)}
+                    <span class="text-xs text-gray-400">${fmtDate(o.created_at)}</span>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4 mb-6">
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Shipping To</p>
+                        <p class="text-sm font-medium text-gray-900">${escHtml(o.shipping_first_name + ' ' + o.shipping_last_name)}</p>
+                        <p class="text-sm text-gray-600">${escHtml(o.shipping_address || '')}</p>
+                        <p class="text-sm text-gray-600">${escHtml(o.shipping_city || '')}${o.shipping_state ? ', ' + escHtml(o.shipping_state) : ''}</p>
+                        <p class="text-sm text-gray-600">${escHtml(o.shipping_country || '')}</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Payment</p>
+                        <p class="text-sm font-medium text-gray-900">${escHtml(o.payment_method || 'N/A')}</p>
+                        <p class="text-sm text-gray-500 mt-2">Subtotal: ${fmtPrice(o.subtotal)}</p>
+                        ${parseFloat(o.shipping_cost) > 0 ? `<p class="text-sm text-gray-500">Shipping: ${fmtPrice(o.shipping_cost)}</p>` : ''}
+                        <p class="text-sm font-bold text-gray-900 mt-1">Total: ${fmtPrice(o.total_amount)}</p>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Items (${(o.items||[]).length})</p>
+                    <div class="bg-gray-50 rounded-xl p-4">${items || '<p class="text-sm text-gray-400 text-center py-4">No items found</p>'}</div>
+                </div>`;
+        }
+
+        async function cancelOrder(id) {
+            if (!id) return;
+            if (!confirm('Are you sure you want to cancel this order? This cannot be undone.')) return;
+            try {
+                const res    = await fetch(API_ORDERS, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    closeModal();
+                    // Reload orders list
+                    const r = await fetch(API_ORDERS);
+                    const d = await r.json();
+                    if (d.success) renderOrders(d.data.orders);
+                } else {
+                    alert(result.error || 'Failed to cancel order');
+                }
+            } catch(e) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('order-modal').classList.add('hidden');
+            document.getElementById('print-btn').classList.add('hidden');
+            document.getElementById('cancel-btn').classList.add('hidden');
+            currentOrder = null;
+        }
+
+        // Print invoice from the modal (currentOrder already loaded)
+        function printInvoice() {
+            if (!currentOrder) return;
+            openInvoiceWindow(currentOrder);
+        }
+
+        // Print directly from table row without opening modal
+        async function quickPrint(id) {
+            try {
+                const res    = await fetch(`${API_ORDERS}?id=${id}`);
+                const result = await res.json();
+                if (result.success) openInvoiceWindow(result.data);
+            } catch(e) {
+                console.error('Failed to load order for print:', e);
+            }
+        }
+
+        function openInvoiceWindow(o) {
+            const shippingFree = parseFloat(o.shipping_cost) === 0;
+
+            const itemsRows = (o.items || []).map(item => `
+                <tr>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;">${escHtml(item.product_name)}</td>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${item.quantity}</td>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">KSh ${parseFloat(item.unit_price).toFixed(2)}</td>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">KSh ${parseFloat(item.total_price).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice ${escHtml(o.order_number)} - Primex Mattress &amp; Beddings</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; font-size:13px; color:#1f2937; background:#fff; position:relative; }
+
+        /* Watermark */
+        body::before {
+            content: 'PRIMEX';
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            font-size: 120px; font-weight: 900;
+            color: rgba(30, 58, 138, 0.07);
+            letter-spacing: 12px; pointer-events: none; z-index: 0; white-space: nowrap;
+        }
+
+        .page { max-width:750px; margin:0 auto; padding:40px; position:relative; z-index:1; }
+
+        /* Letterhead */
+        .letterhead { border-bottom:3px solid #2563eb; padding-bottom:18px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+        .logo-wrap { display:flex; align-items:center; gap:14px; }
+        .logo-icon { width:52px; height:52px; background:linear-gradient(135deg,#2563eb,#7c3aed); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .company-name { font-size:20px; font-weight:900; color:#1e3a8a; letter-spacing:0.5px; text-transform:uppercase; line-height:1.1; }
+        .slogan { font-size:10.5px; color:#2563eb; font-style:italic; margin-top:3px; }
+        .contact-block { text-align:right; font-size:11.5px; color:#4b5563; line-height:1.8; }
+        .contact-block strong { color:#1f2937; display:block; margin-bottom:2px; }
+
+        /* Order meta */
+        .order-meta { display:flex; justify-content:space-between; margin-bottom:24px; gap:12px; }
+        .meta-box { background:#f3f4f6; border-radius:8px; padding:14px 18px; flex:1; }
+        .meta-box h4 { font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:#6b7280; margin-bottom:8px; }
+        .meta-box p { font-size:13px; color:#1f2937; line-height:1.6; }
+
+        /* Status badge */
+        .status-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; text-transform:capitalize; }
+        .status-pending    { background:#fef9c3; color:#854d0e; }
+        .status-processing { background:#dbeafe; color:#1e40af; }
+        .status-shipped    { background:#ede9fe; color:#5b21b6; }
+        .status-delivered  { background:#dcfce7; color:#14532d; }
+        .status-cancelled  { background:#fee2e2; color:#7f1d1d; }
+
+        /* Items table */
+        .section-title { font-size:12px; font-weight:700; color:#1f2937; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
+        table { width:100%; border-collapse:collapse; margin-bottom:24px; }
+        thead tr { background:#1e3a8a; color:#fff; }
+        thead th { padding:10px 12px; text-align:left; font-size:12px; font-weight:600; }
+        thead th:nth-child(2) { text-align:center; }
+        thead th:nth-child(3), thead th:nth-child(4) { text-align:right; }
+        tbody tr:nth-child(even) { background:#f9fafb; }
+
+        /* Totals */
+        .totals { margin-left:auto; width:280px; }
+        .totals-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid #f3f4f6; }
+        .totals-row.grand { border-top:2px solid #1e3a8a; border-bottom:none; padding-top:10px; margin-top:4px; font-size:15px; font-weight:700; color:#1e3a8a; }
+
+        /* Footer */
+        .footer { margin-top:36px; border-top:1px solid #e5e7eb; padding-top:14px; text-align:center; font-size:11px; color:#9ca3af; }
+        .footer strong { color:#2563eb; }
+
+        @media print {
+            body { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+            body::before { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- Letterhead -->
+    <div class="letterhead">
+        <div class="logo-wrap">
+            <div class="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="13" width="20" height="7" rx="2" fill="white" opacity="0.95"/>
+                    <rect x="2" y="10" width="20" height="4" rx="1" fill="white" opacity="0.7"/>
+                    <rect x="4" y="6" width="7" height="5" rx="1.5" fill="white" opacity="0.85"/>
+                    <rect x="13" y="6" width="7" height="5" rx="1.5" fill="white" opacity="0.85"/>
+                    <rect x="3" y="19" width="2" height="3" rx="1" fill="white" opacity="0.7"/>
+                    <rect x="19" y="19" width="2" height="3" rx="1" fill="white" opacity="0.7"/>
+                </svg>
+            </div>
+            <div>
+                <div class="company-name">Primex Mattress &amp; Beddings</div>
+                <div class="slogan">Quality, Durable and Affordable Products</div>
+            </div>
+        </div>
+        <div class="contact-block">
+            <strong>Langa Langa, Nakuru, Kenya</strong>
+            Tel: 011589001 &nbsp;|&nbsp; 0768274937<br>
+            mattressgoodmorning@gmail.com
+        </div>
+    </div>
+
+    <!-- Order Title -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+            <div style="font-size:18px;font-weight:700;color:#1e3a8a;">ORDER INVOICE</div>
+            <div style="font-size:13px;color:#6b7280;margin-top:2px;">${escHtml(o.order_number)}</div>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:12px;color:#6b7280;">Date Issued</div>
+            <div style="font-size:13px;font-weight:600;">${new Date(o.created_at).toLocaleDateString('en-KE', {year:'numeric',month:'long',day:'numeric'})}</div>
+            <span class="status-badge status-${escHtml(o.status)}">${escHtml(o.status)}</span>
+        </div>
+    </div>
+
+    <!-- Meta Info -->
+    <div class="order-meta">
+        <div class="meta-box">
+            <h4>Customer</h4>
+            <p><strong>${escHtml(o.shipping_first_name)} ${escHtml(o.shipping_last_name)}</strong><br>
+            ${escHtml(o.customer_email)}<br>
+            ${o.customer_phone ? escHtml(o.customer_phone) : ''}</p>
+        </div>
+        <div class="meta-box">
+            <h4>Delivery Address</h4>
+            <p>${escHtml(o.shipping_address || '')}<br>
+            ${escHtml(o.shipping_city || '')}${o.shipping_state ? ', ' + escHtml(o.shipping_state) : ''}${o.shipping_zip ? ' ' + escHtml(o.shipping_zip) : ''}</p>
+        </div>
+        <div class="meta-box">
+            <h4>Payment</h4>
+            <p>${escHtml(o.payment_method || 'Cash on Delivery')}<br>
+            <span style="display:inline-block;margin-top:6px;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;${o.payment_status === 'paid' ? 'background:#dcfce7;color:#14532d;' : o.payment_status === 'failed' ? 'background:#fee2e2;color:#7f1d1d;' : 'background:#fef9c3;color:#854d0e;'}">${(o.payment_status || 'Pending').charAt(0).toUpperCase() + (o.payment_status || 'pending').slice(1)}</span></p>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="section-title">Order Items</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${itemsRows}
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="totals">
+        ${o.status === 'cancelled' ? `
+        <div class="totals-row"><span>Subtotal</span><span style="text-decoration:line-through;color:#9ca3af;">KSh ${parseFloat(o.subtotal).toFixed(2)}</span></div>
+        <div class="totals-row"><span>Shipping</span><span style="text-decoration:line-through;color:#9ca3af;">${shippingFree ? 'FREE' : 'KSh ' + parseFloat(o.shipping_cost).toFixed(2)}</span></div>
+        ${parseFloat(o.tax_amount) > 0 ? `<div class="totals-row"><span>Tax</span><span style="text-decoration:line-through;color:#9ca3af;">KSh ${parseFloat(o.tax_amount).toFixed(2)}</span></div>` : ''}
+        <div class="totals-row" style="color:#991b1b;font-size:11px;padding:4px 0;">Order cancelled — no charge applied</div>
+        <div class="totals-row grand" style="color:#991b1b;border-top-color:#991b1b;"><span>TOTAL</span><span>KSh 0.00</span></div>
+        ` : `
+        <div class="totals-row"><span>Subtotal</span><span>KSh ${parseFloat(o.subtotal).toFixed(2)}</span></div>
+        <div class="totals-row"><span>Shipping</span><span>${shippingFree ? 'FREE' : 'KSh ' + parseFloat(o.shipping_cost).toFixed(2)}</span></div>
+        ${parseFloat(o.tax_amount) > 0 ? `<div class="totals-row"><span>Tax</span><span>KSh ${parseFloat(o.tax_amount).toFixed(2)}</span></div>` : ''}
+        <div class="totals-row grand"><span>TOTAL</span><span>KSh ${parseFloat(o.total_amount).toFixed(2)}</span></div>
+        `}
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Thank you for shopping with <strong>Primex Mattress &amp; Beddings</strong> &nbsp;·&nbsp;
+        Quality, Durable and Affordable Products &nbsp;·&nbsp;
+        mattressgoodmorning@gmail.com
+    </div>
+
+</div>
+<script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+
+            const win = window.open('', '_blank');
+            win.document.write(html);
+            win.document.close();
+        }
+        document.getElementById('order-modal').addEventListener('click', e => {
+            if (e.target === document.getElementById('order-modal')) closeModal();
+        });
+
+        function escHtml(str) {
+            return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        // ── Init ─────────────────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = await checkAuth();
+            if (!user) return;
+
+            // Greeting
+            const name = user.first_name || user.email;
+            document.getElementById('user-greeting').textContent = `Welcome back, ${name}`;
+            document.getElementById('account-label').textContent = user.first_name || 'Account';
+
+            // Dropdown
+            const dropdown = document.getElementById('account-dropdown');
+            dropdown.innerHTML = `
+                <div class="px-4 py-2.5 border-b border-gray-100">
+                    <p class="text-xs text-gray-400">Signed in as</p>
+                    <p class="text-sm font-semibold text-gray-800 truncate">${escHtml(user.email)}</p>
+                </div>
+                <a href="my-orders.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-primary-600 font-medium hover:bg-primary-50 transition-colors">
+                    <i class="fas fa-box w-4"></i> My Orders
+                </a>
+                <button onclick="userSignOut()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    <i class="fas fa-sign-out-alt w-4"></i> Sign Out
+                </button>`;
+
+            // Cart count
+            getCart().then(data => updateCartCount(data?.totals?.item_count || 0));
+
+            // Load orders
+            try {
+                const res    = await fetch(API_ORDERS);
+                const result = await res.json();
+                if (result.success) {
+                    renderOrders(result.data.orders);
+                } else {
+                    document.getElementById('orders-container').innerHTML =
+                        `<div class="bg-white rounded-2xl p-10 text-center text-gray-400"><p>${escHtml(result.error)}</p></div>`;
+                }
+            } catch(e) {
+                document.getElementById('orders-container').innerHTML =
+                    '<div class="bg-white rounded-2xl p-10 text-center text-gray-400"><p>Failed to load orders.</p></div>';
+            }
+        });
+    </script>
+</body>
+</html>

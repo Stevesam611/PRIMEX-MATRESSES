@@ -17,7 +17,10 @@
       "Bash(for f:*)",
       "Bash(do echo:*)",
       "Bash(/Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/frontend/index.html:*)",
-      "Bash(head -10 grep -n \"Home\\\\|index.html\" /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/frontend/pages/product-detail.html)"
+      "Bash(head -10 grep -n \"Home\\\\|index.html\" /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/frontend/pages/product-detail.html)",
+      "Bash(do)",
+      "Bash(perl -0777 -i -pe 's|[ \\\\t]*<a href=\"\"reviews\\\\.php\"\"[^>]*>.*?</a>\\\\n||gs' \"/Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/admin/$f\")",
+      "Bash(done)"
     ]
   }
 }

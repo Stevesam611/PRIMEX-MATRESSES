@@ -49,9 +49,6 @@ try {
             $stmt = $db->query("SELECT COUNT(*) as count FROM orders WHERE status = 'pending'");
             $stats['pending_orders_count'] = (int)$stmt->fetch()['count'];
 
-            $stmt = $db->query("SELECT COUNT(*) as count FROM product_reviews WHERE is_approved = FALSE");
-            $stats['pending_reviews_count'] = (int)$stmt->fetch()['count'];
-
             $stmt = $db->query("SELECT COUNT(*) as count FROM products WHERE stock_quantity < 10 AND is_active = TRUE");
             $stats['low_stock_count'] = (int)$stmt->fetch()['count'];
             

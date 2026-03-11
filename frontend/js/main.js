@@ -259,6 +259,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// ── User Account (shared across all pages) ───────────────────────────────
+const USER_AUTH_API = '/PRIMEX-MATRESSES/backend/api/user-auth.php';
+
+async function initUserAccount() {
+    const dropdown = document.getElementById('account-dropdown');
+    const label    = document.getElementById('account-label');
+    if (!dropdown) return;
+
+    try {
+        const res    = await fetch(`${USER_AUTH_API}?action=check`);
+        const result = await res.json();
+
+        if (result.success && result.data.logged_in) {
+            const user = result.data;
+            const name = user.first_name || user.email;
+            if (label) label.textContent = name;
+
+            dropdown.innerHTML = `
+                <div class="px-4 py-2.5 border-b border-gray-100">
+                    <p class="text-xs text-gray-400">Signed in as</p>
+                    <p class="text-sm font-semibold text-gray-800 truncate">${escHtml(user.email)}</p>
+                </div>
+                <a href="my-orders.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-box w-4 text-primary-600"></i> My Orders
+                </a>
+                <a href="change-password.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-key w-4 text-primary-600"></i> Change Password
+                </a>
+                <div class="border-t border-gray-100 my-1"></div>
+                <button onclick="userSignOut()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                    <i class="fas fa-sign-out-alt w-4"></i> Sign Out
+                </button>`;
+        } else {
+            dropdown.innerHTML = `
+                <a href="login.html" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-sign-in-alt w-4 text-primary-600"></i> Sign In
+                </a>
+                <a href="login.html?tab=register" class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-user-plus w-4 text-primary-600"></i> Create Account
+                </a>`;
+        }
+    } catch(e) { console.error('Account check failed:', e); }
+}
+
+function toggleAccountMenu() {
+    document.getElementById('account-dropdown')?.classList.toggle('hidden');
+}
+
+async function userSignOut() {
+    await fetch(USER_AUTH_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'logout' })
+    });
+    window.location.href = 'products.html';
+}
+
+function escHtml(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// Close account dropdown when clicking outside
+document.addEventListener('click', e => {
+    const wrap = document.getElementById('account-menu-wrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('account-dropdown')?.classList.add('hidden');
+    }
+});
+
 // Export functions for use in other scripts
 window.Primex = {
     addToCart,

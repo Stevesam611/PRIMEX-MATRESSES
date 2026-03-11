@@ -28,23 +28,6 @@ try {
                         ['id' => $product['id']]
                     );
                     $product['images'] = $imgStmt->fetchAll();
-                    
-                    // Get product reviews
-                    $revStmt = $db->query(
-                        "SELECT * FROM product_reviews WHERE product_id = :id AND is_approved = TRUE ORDER BY created_at DESC",
-                        ['id' => $product['id']]
-                    );
-                    $product['reviews'] = $revStmt->fetchAll();
-                    
-                    // Calculate average rating
-                    $avgStmt = $db->query(
-                        "SELECT AVG(rating) as avg_rating, COUNT(*) as review_count FROM product_reviews WHERE product_id = :id AND is_approved = TRUE",
-                        ['id' => $product['id']]
-                    );
-                    $ratingData = $avgStmt->fetch();
-                    $product['average_rating'] = round($ratingData['avg_rating'], 1);
-                    $product['review_count'] = $ratingData['review_count'];
-                    
                     successResponse($product);
                 } else {
                     errorResponse('Product not found', 404);

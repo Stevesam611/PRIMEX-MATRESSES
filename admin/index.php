@@ -98,10 +98,6 @@ $auth->requireAdmin();
                     <i class="fas fa-users w-5"></i>
                     <span class="font-medium">Customers</span>
                 </a>
-                <a href="reviews.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg">
-                    <i class="fas fa-star w-5"></i>
-                    <span class="font-medium">Reviews</span>
-                </a>
                 <a href="messages.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg">
                     <i class="fas fa-envelope w-5"></i>
                     <span class="font-medium">Messages</span>
@@ -560,9 +556,8 @@ $auth->requireAdmin();
 
         function updateNotifications(data) {
             const pending  = data.pending_orders_count  || 0;
-            const reviews  = data.pending_reviews_count || 0;
             const lowStock = data.low_stock_count        || 0;
-            const total    = pending + reviews + lowStock;
+            const total    = pending + lowStock;
 
             // Badge on bell
             const badge = document.getElementById('notif-badge');
@@ -586,16 +581,6 @@ $auth->requireAdmin();
                     <div>
                         <p class="text-sm font-medium text-gray-900">${pending} Pending Order${pending > 1 ? 's' : ''}</p>
                         <p class="text-xs text-gray-500">Awaiting processing</p>
-                    </div>
-                </a>`);
-            if (reviews > 0) items.push(`
-                <a href="reviews.php" class="flex items-start space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors">
-                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <i class="fas fa-star text-purple-600 text-sm"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-900">${reviews} Review${reviews > 1 ? 's' : ''} Pending</p>
-                        <p class="text-xs text-gray-500">Awaiting approval</p>
                     </div>
                 </a>`);
             if (lowStock > 0) items.push(`
