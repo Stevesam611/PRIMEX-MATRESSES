@@ -379,24 +379,43 @@ $auth->requireAdmin();
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order ${o.order_number} - Primex Mattress & Beddings</title>
+    <title>Order ${o.order_number} - Primex Mattress &amp; Beddings</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family: Arial, sans-serif; font-size:13px; color:#1f2937; background:#fff; }
-        .page { max-width:750px; margin:0 auto; padding:40px; }
+        body { font-family: Arial, sans-serif; font-size:13px; color:#1f2937; background:#fff; position:relative; }
+
+        /* Watermark */
+        body::before {
+            content: 'PRIMEX';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-35deg);
+            font-size: 120px;
+            font-weight: 900;
+            color: rgba(30, 58, 138, 0.07);
+            letter-spacing: 12px;
+            pointer-events: none;
+            z-index: 0;
+            white-space: nowrap;
+        }
+
+        .page { max-width:750px; margin:0 auto; padding:40px; position:relative; z-index:1; }
 
         /* Letterhead */
-        .letterhead { border-bottom:3px solid #2563eb; padding-bottom:20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:flex-start; }
-        .company-name { font-size:22px; font-weight:800; color:#1e3a8a; letter-spacing:0.5px; text-transform:uppercase; }
-        .slogan { font-size:11px; color:#2563eb; font-style:italic; margin-top:3px; }
-        .contact-block { text-align:right; font-size:11.5px; color:#4b5563; line-height:1.7; }
-        .contact-block strong { color:#1f2937; }
+        .letterhead { border-bottom:3px solid #2563eb; padding-bottom:18px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+        .logo-wrap { display:flex; align-items:center; gap:14px; }
+        .logo-icon { width:52px; height:52px; background:linear-gradient(135deg,#2563eb,#7c3aed); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .logo-text { }
+        .company-name { font-size:20px; font-weight:900; color:#1e3a8a; letter-spacing:0.5px; text-transform:uppercase; line-height:1.1; }
+        .slogan { font-size:10.5px; color:#2563eb; font-style:italic; margin-top:3px; }
+        .contact-block { text-align:right; font-size:11.5px; color:#4b5563; line-height:1.8; }
+        .contact-block strong { color:#1f2937; display:block; margin-bottom:2px; }
 
         /* Order meta */
-        .order-meta { display:flex; justify-content:space-between; margin-bottom:24px; }
-        .meta-box { background:#f3f4f6; border-radius:8px; padding:14px 18px; flex:1; margin-right:16px; }
-        .meta-box:last-child { margin-right:0; }
-        .meta-box h4 { font-size:11px; text-transform:uppercase; letter-spacing:0.5px; color:#6b7280; margin-bottom:8px; }
+        .order-meta { display:flex; justify-content:space-between; margin-bottom:24px; gap:12px; }
+        .meta-box { background:#f3f4f6; border-radius:8px; padding:14px 18px; flex:1; }
+        .meta-box h4 { font-size:10px; text-transform:uppercase; letter-spacing:0.5px; color:#6b7280; margin-bottom:8px; }
         .meta-box p { font-size:13px; color:#1f2937; line-height:1.6; }
 
         /* Status badge */
@@ -408,7 +427,7 @@ $auth->requireAdmin();
         .status-cancelled { background:#fee2e2; color:#7f1d1d; }
 
         /* Items table */
-        .section-title { font-size:13px; font-weight:700; color:#1f2937; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:10px; }
+        .section-title { font-size:12px; font-weight:700; color:#1f2937; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
         table { width:100%; border-collapse:collapse; margin-bottom:24px; }
         thead tr { background:#1e3a8a; color:#fff; }
         thead th { padding:10px 12px; text-align:left; font-size:12px; font-weight:600; }
@@ -422,25 +441,38 @@ $auth->requireAdmin();
         .totals-row.grand { border-top:2px solid #1e3a8a; border-bottom:none; padding-top:10px; margin-top:4px; font-size:15px; font-weight:700; color:#1e3a8a; }
 
         /* Footer */
-        .footer { margin-top:40px; border-top:1px solid #e5e7eb; padding-top:16px; text-align:center; font-size:11px; color:#9ca3af; }
+        .footer { margin-top:36px; border-top:1px solid #e5e7eb; padding-top:14px; text-align:center; font-size:11px; color:#9ca3af; }
         .footer strong { color:#2563eb; }
 
         @media print {
             body { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+            body::before { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
         }
     </style>
 </head>
 <body>
 <div class="page">
 
-    <!-- Letterhead -->
+    <!-- Letterhead with Logo -->
     <div class="letterhead">
-        <div>
-            <div class="company-name">Primex Mattress &amp; Beddings</div>
-            <div class="slogan">Quality, Durable and Affordable Products</div>
+        <div class="logo-wrap">
+            <div class="logo-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="2" y="13" width="20" height="7" rx="2" fill="white" opacity="0.95"/>
+                    <rect x="2" y="10" width="20" height="4" rx="1" fill="white" opacity="0.7"/>
+                    <rect x="4" y="6" width="7" height="5" rx="1.5" fill="white" opacity="0.85"/>
+                    <rect x="13" y="6" width="7" height="5" rx="1.5" fill="white" opacity="0.85"/>
+                    <rect x="3" y="19" width="2" height="3" rx="1" fill="white" opacity="0.7"/>
+                    <rect x="19" y="19" width="2" height="3" rx="1" fill="white" opacity="0.7"/>
+                </svg>
+            </div>
+            <div class="logo-text">
+                <div class="company-name">Primex Mattress &amp; Beddings</div>
+                <div class="slogan">Quality, Durable and Affordable Products</div>
+            </div>
         </div>
         <div class="contact-block">
-            <strong>Langa Langa, Nakuru, Kenya</strong><br>
+            <strong>Langa Langa, Nakuru, Kenya</strong>
             Tel: 011589001 &nbsp;|&nbsp; 0768274937<br>
             mattressgoodmorning@gmail.com
         </div>
@@ -504,7 +536,7 @@ $auth->requireAdmin();
 
     <!-- Footer -->
     <div class="footer">
-        Thank you for shopping with <strong>Primex Mattress &amp; Beddings</strong>! &nbsp;·&nbsp;
+        Thank you for shopping with <strong>Primex Mattress &amp; Beddings</strong> &nbsp;·&nbsp;
         Quality, Durable and Affordable Products &nbsp;·&nbsp;
         mattressgoodmorning@gmail.com
     </div>
