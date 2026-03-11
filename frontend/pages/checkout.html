@@ -320,6 +320,9 @@
         let cartData = null;
         let contactData = {};
         let shippingData = {};
+        let loggedInUser = null;
+
+        const API_USER = '/PRIMEX-MATRESSES/backend/api/user-auth.php';
 
         async function loadCart() {
             cartData = await getCart();
@@ -383,6 +386,14 @@
                 if (!form.checkValidity()) { form.reportValidity(); return; }
                 const fd = new FormData(form);
                 contactData = Object.fromEntries(fd);
+
+                // Pre-fill shipping name from logged-in user if fields are empty
+                if (loggedInUser) {
+                    const fn = document.querySelector('#shipping-form input[name="first_name"]');
+                    const ln = document.querySelector('#shipping-form input[name="last_name"]');
+                    if (fn && !fn.value) fn.value = loggedInUser.first_name || '';
+                    if (ln && !ln.value) ln.value = loggedInUser.last_name  || '';
+                }
             }
             if (step === 3) {
                 const form = document.getElementById('shipping-form');
@@ -516,7 +527,75 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadCart);
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadCart();
+            await checkLoginStatus();
+        });
+
+        async function checkLoginStatus() {
+            try {
+                const res    = await fetch(`${API_USER}?action=check`);
+                const result = await res.json();
+                if (result.success && result.data.logged_in) {
+                    loggedInUser = result.data;
+                    applyLoggedInCheckout();
+                }
+            } catch(e) {
+                // If auth check fails, fall back to showing choice screen normally
+            }
+        }
+
+        function applyLoggedInCheckout() {
+            checkoutMode = 'account';
+
+            // Replace choice screen with a "logged in" banner
+            document.getElementById('choice-screen').innerHTML = `
+                <div class="max-w-2xl mx-auto">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-primary-100 mb-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <i class="fas fa-user-check text-white text-lg"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-gray-900">Checking out as <span class="text-primary-600">${escHtmlCheckout(loggedInUser.first_name || '')} ${escHtmlCheckout(loggedInUser.last_name || '')}</span></p>
+                                <p class="text-sm text-gray-500 truncate">${escHtmlCheckout(loggedInUser.email)}</p>
+                            </div>
+                            <span class="flex-shrink-0 px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                                <i class="fas fa-check-circle mr-1"></i>Signed In
+                            </span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <a href="cart.html" class="text-primary-600 hover:text-primary-700 font-medium text-sm">
+                            <i class="fas fa-arrow-left mr-2"></i>Back to Cart
+                        </a>
+                        <button onclick="proceedLoggedIn()" class="btn-primary px-8 py-3 text-white rounded-xl font-semibold">
+                            Continue to Checkout <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>`;
+        }
+
+        function escHtmlCheckout(str) {
+            return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
+        function proceedLoggedIn() {
+            document.getElementById('choice-screen').classList.add('hidden');
+            document.getElementById('checkout-flow').classList.remove('hidden');
+
+            // Pre-fill and lock email; hide password field (already signed in)
+            const emailInput = document.querySelector('#contact-form input[name="email"]');
+            if (emailInput) {
+                emailInput.value    = loggedInUser.email;
+                emailInput.readOnly = true;
+                emailInput.classList.add('bg-gray-50', 'text-gray-500');
+            }
+            // Hide create-password field — not needed for logged-in user
+            document.getElementById('account-fields').style.display = 'none';
+
+            showStep(1);
+        }
     </script>
 </body>
 </html>

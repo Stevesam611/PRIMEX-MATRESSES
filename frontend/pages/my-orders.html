@@ -114,6 +114,56 @@
         </div>
     </div>
 
+    <!-- Compose / Reply Modal -->
+    <div id="compose-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-primary-100 rounded-lg flex items-center justify-center">
+                        <i id="compose-icon" class="fas fa-envelope text-primary-600"></i>
+                    </div>
+                    <h3 id="compose-title" class="text-base font-semibold text-gray-900">New Message</h3>
+                </div>
+                <button onclick="closeComposeModal()" class="w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors">
+                    <i class="fas fa-times text-gray-500"></i>
+                </button>
+            </div>
+            <!-- Thread context (shown when replying) -->
+            <div id="compose-thread" class="hidden px-6 pt-4">
+                <div class="bg-gray-50 rounded-xl p-3 border border-gray-100">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Replying to</p>
+                    <p id="compose-thread-subject" class="text-xs font-semibold text-gray-700 mb-1"></p>
+                    <p id="compose-thread-preview" class="text-xs text-gray-500 leading-relaxed line-clamp-2"></p>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                    <input type="text" id="compose-subject" placeholder="What's this about?"
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                    <textarea id="compose-message" rows="5" placeholder="Type your message here..."
+                        class="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 resize-none"></textarea>
+                </div>
+                <div id="compose-error" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                    <i class="fas fa-exclamation-circle mr-1"></i><span id="compose-error-text"></span>
+                </div>
+                <div id="compose-success" class="hidden p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+                    <i class="fas fa-check-circle mr-1"></i> Message sent! We'll get back to you soon.
+                </div>
+            </div>
+            <div class="flex gap-3 px-6 pb-6">
+                <button onclick="closeComposeModal()" class="flex-1 py-2.5 border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-50 text-sm font-medium transition-colors">Cancel</button>
+                <button onclick="submitUserMessage()" id="compose-btn"
+                    class="flex-1 py-2.5 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity">
+                    <i class="fas fa-paper-plane mr-1"></i> Send Message
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Order Detail Modal -->
     <div id="order-modal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -597,6 +647,9 @@
         document.getElementById('order-modal').addEventListener('click', e => {
             if (e.target === document.getElementById('order-modal')) closeModal();
         });
+        document.getElementById('compose-modal').addEventListener('click', e => {
+            if (e.target === document.getElementById('compose-modal')) closeComposeModal();
+        });
 
         function escHtml(str) {
             return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -621,7 +674,9 @@
         }
 
         // ── User Messages ─────────────────────────────────────────────────
-        const API_USER_MESSAGES = '/PRIMEX-MATRESSES/backend/api/user-messages.php';
+        const API_USER_MESSAGES  = '/PRIMEX-MATRESSES/backend/api/user-messages.php';
+        const API_CONTACT        = '/PRIMEX-MATRESSES/backend/api/messages.php';
+        let currentUser = null;
 
         async function loadUserMessages() {
             try {
@@ -638,17 +693,28 @@
 
         function renderUserMessages(messages) {
             const container = document.getElementById('messages-container');
+
+            // Always show header with New Message button
+            const header = `
+                <div class="flex items-center justify-between mb-4">
+                    <p class="text-sm font-semibold text-gray-500">${messages.length} message${messages.length !== 1 ? 's' : ''}</p>
+                    <button onclick="openComposeModal()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl text-sm font-semibold hover:opacity-90 transition-opacity shadow-sm">
+                        <i class="fas fa-pen text-xs"></i> New Message
+                    </button>
+                </div>`;
+
             if (!messages.length) {
-                container.innerHTML = `
+                container.innerHTML = header + `
                     <div class="bg-white rounded-2xl shadow-sm p-16 text-center">
                         <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-5">
                             <i class="fas fa-envelope-open text-3xl text-gray-300"></i>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-700 mb-2">No messages yet</h3>
-                        <p class="text-gray-400 mb-6">You haven't sent any messages to us.</p>
-                        <a href="contact.html" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity">
-                            <i class="fas fa-envelope"></i> Contact Us
-                        </a>
+                        <p class="text-gray-400 mb-6">Have a question? Send us a message and we'll get back to you.</p>
+                        <button onclick="openComposeModal()" class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-semibold hover:opacity-90 transition-opacity">
+                            <i class="fas fa-envelope"></i> Send a Message
+                        </button>
                     </div>`;
                 return;
             }
@@ -657,23 +723,31 @@
             const hasUnread = messages.some(m => m.status === 'unread');
             document.getElementById('msg-unread-dot').classList.toggle('hidden', !hasUnread);
 
-            container.innerHTML = `<div class="space-y-4">${messages.map(m => {
-                const date       = new Date(m.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
-                const isUnread   = m.status === 'unread';
-                const hasReply   = !!m.admin_reply;
-                const replyDate  = m.replied_at ? new Date(m.replied_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
+            container.innerHTML = header + `<div class="space-y-4">${messages.map(m => {
+                const date      = new Date(m.created_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                const isUnread  = m.status === 'unread';
+                const hasReply  = !!m.admin_reply;
+                const replyDate = m.replied_at ? new Date(m.replied_at).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }) : '';
+                // Encode message for onclick data attribute
+                const msgData = escHtml(JSON.stringify({ subject: m.subject, message: m.message }));
 
                 return `
                 <div class="bg-white rounded-2xl shadow-sm overflow-hidden ${isUnread && !hasReply ? 'border-l-4 border-primary-500' : ''}">
                     <div class="p-5">
                         <div class="flex items-start justify-between gap-3 mb-3">
-                            <div>
+                            <div class="flex-1 min-w-0">
                                 <p class="font-semibold text-gray-900 text-sm">${escHtml(m.subject)}</p>
                                 <p class="text-xs text-gray-400 mt-0.5">${date}</p>
                             </div>
-                            ${hasReply
-                                ? `<span class="flex-shrink-0 px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full"><i class="fas fa-check-circle mr-1"></i>Replied</span>`
-                                : `<span class="flex-shrink-0 px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full"><i class="fas fa-clock mr-1"></i>Pending reply</span>`}
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                ${hasReply
+                                    ? `<span class="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full"><i class="fas fa-check-circle mr-1"></i>Replied</span>`
+                                    : `<span class="px-2.5 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full"><i class="fas fa-clock mr-1"></i>Pending</span>`}
+                                <button onclick="openComposeModal(${msgData})"
+                                    class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-primary-600 border border-primary-200 rounded-lg hover:bg-primary-50 transition-colors">
+                                    <i class="fas fa-reply text-[10px]"></i> Reply
+                                </button>
+                            </div>
                         </div>
                         <!-- Your message -->
                         <div class="bg-gray-50 rounded-xl p-4 mb-3">
@@ -691,19 +765,106 @@
                             </div>
                             <p class="text-sm text-primary-900 leading-relaxed">${escHtml(m.admin_reply)}</p>
                         </div>` : `
-                        <div class="flex items-center gap-2 text-xs text-gray-400">
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mt-1">
                             <i class="fas fa-info-circle"></i>
-                            <span>We'll reply to your registered email address. Check back here for updates.</span>
+                            <span>We'll reply here and to your email. Check back for updates.</span>
                         </div>`}
                     </div>
                 </div>`;
             }).join('')}</div>`;
         }
 
+        // ── Compose / Reply Modal ─────────────────────────────────────────
+        // openComposeModal() = new message
+        // openComposeModal({ subject, message }) = reply (pre-fills "Re: subject")
+        function openComposeModal(replyTo) {
+            const isReply = replyTo && typeof replyTo === 'object';
+            document.getElementById('compose-title').textContent = isReply ? 'Reply' : 'New Message';
+            document.getElementById('compose-icon').className = isReply ? 'fas fa-reply text-primary-600' : 'fas fa-envelope text-primary-600';
+
+            const thread = document.getElementById('compose-thread');
+            if (isReply) {
+                document.getElementById('compose-thread-subject').textContent = replyTo.subject;
+                document.getElementById('compose-thread-preview').textContent = replyTo.message;
+                document.getElementById('compose-subject').value = `Re: ${replyTo.subject}`;
+                thread.classList.remove('hidden');
+            } else {
+                document.getElementById('compose-subject').value = '';
+                thread.classList.add('hidden');
+            }
+
+            document.getElementById('compose-message').value = '';
+            document.getElementById('compose-error').classList.add('hidden');
+            document.getElementById('compose-success').classList.add('hidden');
+            const btn = document.getElementById('compose-btn');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Send Message';
+            document.getElementById('compose-modal').classList.remove('hidden');
+            document.getElementById('compose-message').focus();
+        }
+
+        function closeComposeModal() {
+            document.getElementById('compose-modal').classList.add('hidden');
+        }
+
+        async function submitUserMessage() {
+            if (!currentUser) return;
+            const subject = document.getElementById('compose-subject').value.trim();
+            const message = document.getElementById('compose-message').value.trim();
+            const errDiv  = document.getElementById('compose-error');
+            errDiv.classList.add('hidden');
+            document.getElementById('compose-success').classList.add('hidden');
+
+            if (!subject) { document.getElementById('compose-error-text').textContent = 'Please enter a subject.'; errDiv.classList.remove('hidden'); return; }
+            if (!message) { document.getElementById('compose-error-text').textContent = 'Please type your message.'; errDiv.classList.remove('hidden'); return; }
+
+            const btn = document.getElementById('compose-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Sending...';
+
+            try {
+                const res = await fetch(API_CONTACT, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        first_name: currentUser.first_name || 'User',
+                        last_name:  currentUser.last_name  || '',
+                        email:      currentUser.email,
+                        phone:      '',
+                        subject,
+                        message
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    document.getElementById('compose-success').classList.remove('hidden');
+                    document.getElementById('compose-message').value = '';
+                    document.getElementById('compose-subject').value  = '';
+                    messagesLoaded = false; // force reload next time tab viewed
+                    setTimeout(() => {
+                        closeComposeModal();
+                        loadUserMessages(); // refresh list
+                        messagesLoaded = true;
+                    }, 1800);
+                } else {
+                    document.getElementById('compose-error-text').textContent = result.error || 'Failed to send. Please try again.';
+                    errDiv.classList.remove('hidden');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Send Message';
+                }
+            } catch(e) {
+                document.getElementById('compose-error-text').textContent = 'Network error. Please try again.';
+                errDiv.classList.remove('hidden');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane mr-1"></i> Send Message';
+            }
+        }
+
         // ── Init ─────────────────────────────────────────────────────────
         document.addEventListener('DOMContentLoaded', async () => {
             const user = await checkAuth();
             if (!user) return;
+            currentUser = user;
 
             // Greeting
             const name = user.first_name || user.email;
