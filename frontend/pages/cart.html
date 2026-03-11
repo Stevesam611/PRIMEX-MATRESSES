@@ -104,20 +104,20 @@
                         <div class="space-y-4 mb-6">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span id="summary-subtotal" class="font-medium">$0.00</span>
+                                <span id="summary-subtotal" class="font-medium">KSh 0.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Shipping</span>
-                                <span id="summary-shipping" class="font-medium">$0.00</span>
+                                <span id="summary-shipping" class="font-medium">KSh 0.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Tax (8%)</span>
-                                <span id="summary-tax" class="font-medium">$0.00</span>
+                                <span id="summary-tax" class="font-medium">KSh 0.00</span>
                             </div>
                             <div class="border-t border-gray-100 pt-4">
                                 <div class="flex justify-between">
                                     <span class="text-lg font-semibold">Total</span>
-                                    <span id="summary-total" class="text-2xl font-bold text-primary-600">$0.00</span>
+                                    <span id="summary-total" class="text-2xl font-bold text-primary-600">KSh 0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -258,8 +258,8 @@
                                             </button>
                                         </div>
                                         <div class="text-right">
-                                            <div class="text-lg font-bold text-primary-600">$${(item.current_price * item.quantity).toFixed(2)}</div>
-                                            <div class="text-sm text-gray-500">$${parseFloat(item.current_price).toFixed(2)} each</div>
+                                            <div class="text-lg font-bold text-primary-600">KSh ${(item.current_price * item.quantity).toFixed(2)}</div>
+                                            <div class="text-sm text-gray-500">KSh ${parseFloat(item.current_price).toFixed(2)} each</div>
                                         </div>
                                     </div>
                                 </div>
@@ -275,10 +275,10 @@
 
         // Update summary
         function updateSummary(totals) {
-            document.getElementById('summary-subtotal').textContent = `$${totals.subtotal.toFixed(2)}`;
-            document.getElementById('summary-shipping').textContent = totals.shipping === 0 ? 'FREE' : `$${totals.shipping.toFixed(2)}`;
-            document.getElementById('summary-tax').textContent = `$${totals.tax.toFixed(2)}`;
-            document.getElementById('summary-total').textContent = `$${totals.total.toFixed(2)}`;
+            document.getElementById('summary-subtotal').textContent = `KSh ${totals.subtotal.toFixed(2)}`;
+            document.getElementById('summary-shipping').textContent = totals.shipping === 0 ? 'FREE' : `KSh ${totals.shipping.toFixed(2)}`;
+            document.getElementById('summary-tax').textContent = `KSh ${totals.tax.toFixed(2)}`;
+            document.getElementById('summary-total').textContent = `KSh ${totals.total.toFixed(2)}`;
         }
 
         // Update item quantity

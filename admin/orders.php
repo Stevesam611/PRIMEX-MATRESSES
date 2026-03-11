@@ -133,9 +133,15 @@ $auth->requireAdmin();
         <div class="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6 border-b border-gray-100 flex items-center justify-between">
                 <h2 class="text-xl font-semibold" id="modal-title">Order Details</h2>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
+                <div class="flex items-center space-x-3">
+                    <button onclick="printOrder()" class="flex items-center space-x-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm font-medium">
+                        <i class="fas fa-print"></i>
+                        <span>Print / PDF</span>
+                    </button>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
             </div>
             <div id="order-details" class="p-6">
                 <!-- Loaded dynamically -->
@@ -145,6 +151,7 @@ $auth->requireAdmin();
 
     <script>
         let currentPage = 1;
+        let currentOrder = null;
 
         // Load orders
         async function loadOrders() {
@@ -175,7 +182,7 @@ $auth->requireAdmin();
                     <td class="px-6 py-4">${o.shipping_first_name || 'Guest'} ${o.shipping_last_name || ''}</td>
                     <td class="px-6 py-4">${new Date(o.created_at).toLocaleDateString()}</td>
                     <td class="px-6 py-4">${o.item_count}</td>
-                    <td class="px-6 py-4 font-medium">$${parseFloat(o.total_amount).toFixed(2)}</td>
+                    <td class="px-6 py-4 font-medium">KSh ${parseFloat(o.total_amount).toFixed(2)}</td>
                     <td class="px-6 py-4">
                         <select onchange="updateStatus(${o.id}, this.value)" class="px-3 py-1 rounded-lg text-sm font-medium border-0 ${getStatusColor(o.status)}">
                             <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
@@ -186,9 +193,14 @@ $auth->requireAdmin();
                         </select>
                     </td>
                     <td class="px-6 py-4">
-                        <button onclick="viewOrder(${o.id})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                            <i class="fas fa-eye"></i>
-                        </button>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="viewOrder(${o.id})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg" title="View">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="viewAndPrint(${o.id})" class="p-2 text-gray-500 hover:bg-gray-100 rounded-lg" title="Print">
+                                <i class="fas fa-print"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -259,6 +271,7 @@ $auth->requireAdmin();
 
                 if (result.success) {
                     const o = result.data;
+                    currentOrder = o;
                     document.getElementById('order-details').innerHTML = `
                         <div class="grid md:grid-cols-2 gap-6 mb-6">
                             <div>
@@ -295,8 +308,8 @@ $auth->requireAdmin();
                                         <tr class="border-b border-gray-100">
                                             <td class="px-4 py-2">${item.product_name}</td>
                                             <td class="px-4 py-2">${item.quantity}</td>
-                                            <td class="px-4 py-2">$${parseFloat(item.unit_price).toFixed(2)}</td>
-                                            <td class="px-4 py-2">$${parseFloat(item.total_price).toFixed(2)}</td>
+                                            <td class="px-4 py-2">KSh ${parseFloat(item.unit_price).toFixed(2)}</td>
+                                            <td class="px-4 py-2">KSh ${parseFloat(item.total_price).toFixed(2)}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
@@ -305,19 +318,19 @@ $auth->requireAdmin();
                         <div class="mt-6 pt-6 border-t border-gray-100">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span>$${parseFloat(o.subtotal).toFixed(2)}</span>
+                                <span>KSh ${parseFloat(o.subtotal).toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between mt-2">
                                 <span class="text-gray-600">Shipping</span>
-                                <span>$${parseFloat(o.shipping_cost).toFixed(2)}</span>
+                                <span>KSh ${parseFloat(o.shipping_cost).toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between mt-2">
                                 <span class="text-gray-600">Tax</span>
-                                <span>$${parseFloat(o.tax_amount).toFixed(2)}</span>
+                                <span>KSh ${parseFloat(o.tax_amount).toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between mt-4 pt-4 border-t border-gray-100">
                                 <span class="font-semibold">Total</span>
-                                <span class="font-bold text-primary-600">$${parseFloat(o.total_amount).toFixed(2)}</span>
+                                <span class="font-bold text-primary-600">KSh ${parseFloat(o.total_amount).toFixed(2)}</span>
                             </div>
                         </div>
                     `;
@@ -328,8 +341,182 @@ $auth->requireAdmin();
             }
         }
 
+        // Load order then immediately print (from table row button)
+        async function viewAndPrint(id) {
+            try {
+                const response = await fetch(`../backend/api/orders.php?id=${id}`);
+                const result = await response.json();
+                if (result.success) {
+                    currentOrder = result.data;
+                    printOrder();
+                }
+            } catch (error) {
+                console.error('Error loading order for print:', error);
+            }
+        }
+
         function closeModal() {
             document.getElementById('order-modal').classList.add('hidden');
+        }
+
+        // Print order as PDF
+        function printOrder() {
+            if (!currentOrder) return;
+            const o = currentOrder;
+
+            const itemsRows = o.items.map(item => `
+                <tr>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;">${item.product_name}</td>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:center;">${item.quantity}</td>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">KSh ${parseFloat(item.unit_price).toFixed(2)}</td>
+                    <td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;text-align:right;">KSh ${parseFloat(item.total_price).toFixed(2)}</td>
+                </tr>
+            `).join('');
+
+            const shippingFree = parseFloat(o.shipping_cost) === 0;
+
+            const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order ${o.order_number} - Primex Mattress & Beddings</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: Arial, sans-serif; font-size:13px; color:#1f2937; background:#fff; }
+        .page { max-width:750px; margin:0 auto; padding:40px; }
+
+        /* Letterhead */
+        .letterhead { border-bottom:3px solid #2563eb; padding-bottom:20px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:flex-start; }
+        .company-name { font-size:22px; font-weight:800; color:#1e3a8a; letter-spacing:0.5px; text-transform:uppercase; }
+        .slogan { font-size:11px; color:#2563eb; font-style:italic; margin-top:3px; }
+        .contact-block { text-align:right; font-size:11.5px; color:#4b5563; line-height:1.7; }
+        .contact-block strong { color:#1f2937; }
+
+        /* Order meta */
+        .order-meta { display:flex; justify-content:space-between; margin-bottom:24px; }
+        .meta-box { background:#f3f4f6; border-radius:8px; padding:14px 18px; flex:1; margin-right:16px; }
+        .meta-box:last-child { margin-right:0; }
+        .meta-box h4 { font-size:11px; text-transform:uppercase; letter-spacing:0.5px; color:#6b7280; margin-bottom:8px; }
+        .meta-box p { font-size:13px; color:#1f2937; line-height:1.6; }
+
+        /* Status badge */
+        .status-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; text-transform:capitalize; }
+        .status-pending   { background:#fef9c3; color:#854d0e; }
+        .status-processing{ background:#dbeafe; color:#1e40af; }
+        .status-shipped   { background:#ede9fe; color:#5b21b6; }
+        .status-delivered { background:#dcfce7; color:#14532d; }
+        .status-cancelled { background:#fee2e2; color:#7f1d1d; }
+
+        /* Items table */
+        .section-title { font-size:13px; font-weight:700; color:#1f2937; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:10px; }
+        table { width:100%; border-collapse:collapse; margin-bottom:24px; }
+        thead tr { background:#1e3a8a; color:#fff; }
+        thead th { padding:10px 12px; text-align:left; font-size:12px; font-weight:600; }
+        thead th:nth-child(2) { text-align:center; }
+        thead th:nth-child(3), thead th:nth-child(4) { text-align:right; }
+        tbody tr:nth-child(even) { background:#f9fafb; }
+
+        /* Totals */
+        .totals { margin-left:auto; width:280px; }
+        .totals-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid #f3f4f6; }
+        .totals-row.grand { border-top:2px solid #1e3a8a; border-bottom:none; padding-top:10px; margin-top:4px; font-size:15px; font-weight:700; color:#1e3a8a; }
+
+        /* Footer */
+        .footer { margin-top:40px; border-top:1px solid #e5e7eb; padding-top:16px; text-align:center; font-size:11px; color:#9ca3af; }
+        .footer strong { color:#2563eb; }
+
+        @media print {
+            body { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+        }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <!-- Letterhead -->
+    <div class="letterhead">
+        <div>
+            <div class="company-name">Primex Mattress &amp; Beddings</div>
+            <div class="slogan">Quality, Durable and Affordable Products</div>
+        </div>
+        <div class="contact-block">
+            <strong>Langa Langa, Nakuru, Kenya</strong><br>
+            Tel: 011589001 &nbsp;|&nbsp; 0768274937<br>
+            mattressgoodmorning@gmail.com
+        </div>
+    </div>
+
+    <!-- Order Title -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+        <div>
+            <div style="font-size:18px;font-weight:700;color:#1e3a8a;">ORDER RECEIPT</div>
+            <div style="font-size:13px;color:#6b7280;margin-top:2px;">${o.order_number}</div>
+        </div>
+        <div style="text-align:right;">
+            <div style="font-size:12px;color:#6b7280;">Date Issued</div>
+            <div style="font-size:13px;font-weight:600;">${new Date(o.created_at).toLocaleDateString('en-KE', {year:'numeric',month:'long',day:'numeric'})}</div>
+            <span class="status-badge status-${o.status}">${o.status}</span>
+        </div>
+    </div>
+
+    <!-- Meta Info -->
+    <div class="order-meta">
+        <div class="meta-box">
+            <h4>Customer</h4>
+            <p><strong>${o.shipping_first_name} ${o.shipping_last_name}</strong><br>
+            ${o.customer_email}<br>
+            ${o.customer_phone || ''}</p>
+        </div>
+        <div class="meta-box">
+            <h4>Delivery Address</h4>
+            <p>${o.shipping_address}<br>
+            ${o.shipping_city}${o.shipping_state ? ', ' + o.shipping_state : ''}${o.shipping_zip ? ' ' + o.shipping_zip : ''}</p>
+        </div>
+        <div class="meta-box">
+            <h4>Payment</h4>
+            <p>Cash on Delivery</p>
+        </div>
+    </div>
+
+    <!-- Items -->
+    <div class="section-title">Order Items</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${itemsRows}
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <div class="totals">
+        <div class="totals-row"><span>Subtotal</span><span>KSh ${parseFloat(o.subtotal).toFixed(2)}</span></div>
+        <div class="totals-row"><span>Shipping</span><span>${shippingFree ? 'FREE' : 'KSh ' + parseFloat(o.shipping_cost).toFixed(2)}</span></div>
+        <div class="totals-row"><span>Tax (8%)</span><span>KSh ${parseFloat(o.tax_amount).toFixed(2)}</span></div>
+        <div class="totals-row grand"><span>TOTAL</span><span>KSh ${parseFloat(o.total_amount).toFixed(2)}</span></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Thank you for shopping with <strong>Primex Mattress &amp; Beddings</strong>! &nbsp;·&nbsp;
+        Quality, Durable and Affordable Products &nbsp;·&nbsp;
+        mattressgoodmorning@gmail.com
+    </div>
+
+</div>
+<script>window.onload = function(){ window.print(); }<\/script>
+</body>
+</html>`;
+
+            const win = window.open('', '_blank');
+            win.document.write(html);
+            win.document.close();
         }
 
         // Debounce search

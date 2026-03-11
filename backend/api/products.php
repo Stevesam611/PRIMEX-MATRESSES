@@ -144,32 +144,44 @@ try {
             $auth->requireAdmin();
             
             $data = json_decode(file_get_contents('php://input'), true);
-            
+
+            // Generate unique slug
+            $baseSlug = generateSlug($data['name']);
+            $slug = $baseSlug;
+            $slugCount = 1;
+            while (true) {
+                $existing = $db->query("SELECT id FROM products WHERE slug = :slug", ['slug' => $slug])->fetch();
+                if (!$existing) break;
+                $slug = $baseSlug . '-' . $slugCount++;
+            }
+
             $sql = "INSERT INTO products (name, slug, description, short_description, price, discount_price, sku, stock_quantity, category_id, main_image, specifications, features, is_featured, weight, dimensions, warranty)
-                    VALUES (:name, :slug, :description, :short_description, :price, :discount_price, :sku, :stock_quantity, :category_id, :main_image, :specifications, :features, :is_featured, :weight, :dimensions, :warranty)";
+                    VALUES (:name, :slug, :description, :short_description, :price, :discount_price, :sku, :stock_quantity, :category_id, :main_image, :specifications, :features, :is_featured, :weight, :dimensions, :warranty)
+                    RETURNING id";
 
             $params = [
                 'name' => $data['name'],
-                'slug' => generateSlug($data['name']),
+                'slug' => $slug,
                 'description' => $data['description'] ?? null,
                 'short_description' => $data['short_description'] ?? null,
                 'price' => $data['price'],
                 'discount_price' => !empty($data['discount_price']) ? $data['discount_price'] : null,
-                'sku' => $data['sku'] ?? null,
+                'sku' => !empty($data['sku']) ? $data['sku'] : null,
                 'stock_quantity' => $data['stock_quantity'] ?? 0,
                 'category_id' => $data['category_id'],
                 'main_image' => $data['main_image'] ?? null,
                 'specifications' => json_encode($data['specifications'] ?? []),
                 'features' => json_encode($data['features'] ?? []),
-                'is_featured' => $data['is_featured'] ?? false,
+                'is_featured' => !empty($data['is_featured']) ? 'true' : 'false',
                 'weight' => $data['weight'] ?? null,
                 'dimensions' => $data['dimensions'] ?? null,
                 'warranty' => $data['warranty'] ?? null
             ];
-            
-            $db->query($sql, $params);
-            $productId = $db->lastInsertId();
-            
+
+            $stmt = $db->query($sql, $params);
+            $row = $stmt->fetch();
+            $productId = $row['id'];
+
             successResponse(['id' => $productId, 'message' => 'Product created successfully']);
             break;
             
@@ -213,8 +225,8 @@ try {
                 'main_image' => $data['main_image'] ?? null,
                 'specifications' => json_encode($data['specifications'] ?? []),
                 'features' => json_encode($data['features'] ?? []),
-                'is_featured' => $data['is_featured'],
-                'is_active' => $data['is_active'],
+                'is_featured' => !empty($data['is_featured']) ? 'true' : 'false',
+                'is_active' => !empty($data['is_active']) ? 'true' : 'false',
                 'weight' => $data['weight'] ?? null,
                 'dimensions' => $data['dimensions'] ?? null,
                 'warranty' => $data['warranty'] ?? null
@@ -246,6 +258,15 @@ try {
         default:
             errorResponse('Method not allowed', 405);
     }
+} catch (PDOException $e) {
+    error_log("Products API error: " . $e->getMessage());
+    // Unique constraint violations
+    if (strpos($e->getMessage(), 'products_sku_key') !== false) {
+        errorResponse('A product with this SKU already exists. Please use a different SKU.');
+    } elseif (strpos($e->getMessage(), 'products_slug_key') !== false) {
+        errorResponse('A product with this name already exists.');
+    }
+    errorResponse('An error occurred: ' . $e->getMessage(), 500);
 } catch (Exception $e) {
     error_log("Products API error: " . $e->getMessage());
     errorResponse('An error occurred', 500);

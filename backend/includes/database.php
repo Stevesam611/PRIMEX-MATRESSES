@@ -41,7 +41,7 @@ class Database {
             return $stmt;
         } catch (PDOException $e) {
             error_log("Query failed: " . $e->getMessage());
-            throw new Exception("Query execution failed");
+            throw $e;
         }
     }
     
@@ -86,7 +86,7 @@ function generateOrderNumber() {
 
 // Helper function to format price
 function formatPrice($price) {
-    return '$' . number_format($price, 2);
+    return 'KSh ' . number_format($price, 2);
 }
 
 // Helper function to send JSON response

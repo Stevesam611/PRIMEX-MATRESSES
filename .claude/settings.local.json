@@ -6,7 +6,13 @@
       "Bash(psql -U johnnjenga -p 5432 -d postgres -c 'CREATE DATABASE primex_mattress;')",
       "Bash(psql -U johnnjenga -p 5432 -d primex_mattress -f /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/database/schema.sql)",
       "Bash(/Applications/XAMPP/xamppfiles/bin/php -r \":*)",
-      "Bash(php -r \":*)"
+      "Bash(php -r \":*)",
+      "Bash(chmod 755 /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/backend/uploads/products)",
+      "Bash(grep -n '\\\\$\\\\${' /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/frontend/pages/product-detail.html)",
+      "Bash(grep '\\\\$')",
+      "Read(//Applications/XAMPP/xamppfiles/logs/**)",
+      "Bash(chmod 777 /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/backend/uploads/products)",
+      "Bash(chmod 777 /Applications/XAMPP/xamppfiles/htdocs/PRIMEX-MATRESSES/backend/uploads)"
     ]
   }
 }

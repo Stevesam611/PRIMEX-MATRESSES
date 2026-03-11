@@ -247,7 +247,7 @@ $auth->requireAdmin();
                     
                     // Update stats
                     document.getElementById('stat-orders').textContent = data.total_orders.toLocaleString();
-                    document.getElementById('stat-revenue').textContent = '$' + (data.sales.total_sales || 0).toLocaleString();
+                    document.getElementById('stat-revenue').textContent = 'KSh ' + (data.sales.total_sales || 0).toLocaleString();
                     document.getElementById('stat-products').textContent = data.total_products.toLocaleString();
                     document.getElementById('stat-customers').textContent = data.total_customers.toLocaleString();
 
@@ -256,7 +256,7 @@ $auth->requireAdmin();
                         <tr class="border-b border-gray-50 last:border-0">
                             <td class="py-3 font-medium">${order.order_number}</td>
                             <td class="py-3 text-gray-600">${order.shipping_first_name || 'Guest'} ${order.shipping_last_name || ''}</td>
-                            <td class="py-3 font-medium">$${parseFloat(order.total_amount).toFixed(2)}</td>
+                            <td class="py-3 font-medium">KSh ${parseFloat(order.total_amount).toFixed(2)}</td>
                             <td class="py-3">
                                 <span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}">
                                     ${order.status}
@@ -323,7 +323,7 @@ $auth->requireAdmin();
                     responsive: true,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { beginAtZero: true, ticks: { callback: v => '$' + v } }
+                        y: { beginAtZero: true, ticks: { callback: v => 'KSh ' + v } }
                     }
                 }
             });

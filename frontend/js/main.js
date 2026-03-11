@@ -173,7 +173,7 @@ function initNavbarScroll() {
 
 // Format Price
 function formatPrice(price) {
-    return '$' + parseFloat(price).toFixed(2);
+    return 'KSh ' + parseFloat(price).toFixed(2);
 }
 
 // Get URL Parameters

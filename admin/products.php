@@ -176,8 +176,21 @@ $auth->requireAdmin();
                     </div>
                 </div>
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-                    <input type="text" id="product-image" placeholder="https://... or images/products/..." class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
+                    <input type="hidden" id="product-image">
+                    <div class="flex items-start space-x-4">
+                        <div id="image-preview-wrap" class="hidden w-24 h-24 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0">
+                            <img id="image-preview" src="" alt="Preview" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1">
+                            <input type="file" id="image-file-input" accept="image/*" class="hidden" onchange="uploadImage(this)">
+                            <button type="button" onclick="document.getElementById('image-file-input').click()"
+                                class="px-4 py-2 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200 text-sm font-medium flex items-center space-x-2">
+                                <i class="fas fa-upload mr-2"></i>Upload Image
+                            </button>
+                            <p id="upload-status" class="text-xs text-gray-500 mt-2">Max 5MB · JPG, PNG, WEBP, GIF</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
@@ -265,9 +278,9 @@ $auth->requireAdmin();
                     <td class="px-6 py-4">${p.category_name || '-'}</td>
                     <td class="px-6 py-4">
                         ${p.discount_price ? `
-                            <span class="font-medium">$${parseFloat(p.discount_price).toFixed(2)}</span>
-                            <span class="text-sm text-gray-400 line-through">$${parseFloat(p.price).toFixed(2)}</span>
-                        ` : `<span class="font-medium">$${parseFloat(p.price).toFixed(2)}</span>`}
+                            <span class="font-medium">KSh ${parseFloat(p.discount_price).toFixed(2)}</span>
+                            <span class="text-sm text-gray-400 line-through">KSh ${parseFloat(p.price).toFixed(2)}</span>
+                        ` : `<span class="font-medium">KSh ${parseFloat(p.price).toFixed(2)}</span>`}
                     </td>
                     <td class="px-6 py-4">
                         <span class="${p.stock_quantity < 10 ? 'text-red-600' : 'text-gray-900'}">${p.stock_quantity}</span>
@@ -316,12 +329,51 @@ $auth->requireAdmin();
             loadProducts();
         }
 
+        // Upload image
+        async function uploadImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusEl = document.getElementById('upload-status');
+            statusEl.textContent = 'Uploading...';
+            statusEl.classList.remove('text-red-500');
+            statusEl.classList.add('text-gray-500');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            try {
+                const response = await fetch('../backend/api/upload.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (result.success) {
+                    document.getElementById('product-image').value = result.data.url;
+                    document.getElementById('image-preview').src = result.data.url;
+                    document.getElementById('image-preview-wrap').classList.remove('hidden');
+                    statusEl.textContent = 'Image uploaded successfully';
+                } else {
+                    statusEl.textContent = result.error || 'Upload failed';
+                    statusEl.classList.add('text-red-500');
+                }
+            } catch (e) {
+                statusEl.textContent = 'Upload failed';
+                statusEl.classList.add('text-red-500');
+            }
+        }
+
         // Modal functions
         function openModal() {
             document.getElementById('product-modal').classList.remove('hidden');
             document.getElementById('modal-title').textContent = 'Add Product';
             document.getElementById('product-form').reset();
             document.getElementById('product-id').value = '';
+            document.getElementById('product-image').value = '';
+            document.getElementById('image-preview-wrap').classList.add('hidden');
+            document.getElementById('image-preview').src = '';
+            document.getElementById('upload-status').textContent = 'Max 5MB · JPG, PNG, WEBP, GIF';
         }
 
         function closeModal() {
@@ -344,6 +396,14 @@ $auth->requireAdmin();
                     document.getElementById('product-price').value = p.price;
                     document.getElementById('product-discount').value = p.discount_price || '';
                     document.getElementById('product-image').value = p.main_image || '';
+                    if (p.main_image) {
+                        document.getElementById('image-preview').src = p.main_image;
+                        document.getElementById('image-preview-wrap').classList.remove('hidden');
+                        document.getElementById('upload-status').textContent = 'Current image loaded';
+                    } else {
+                        document.getElementById('image-preview-wrap').classList.add('hidden');
+                        document.getElementById('upload-status').textContent = 'Max 5MB · JPG, PNG, WEBP, GIF';
+                    }
                     document.getElementById('product-short-desc').value = p.short_description || '';
                     document.getElementById('product-description').value = p.description || '';
                     document.getElementById('product-featured').checked = p.is_featured;

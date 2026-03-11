@@ -256,7 +256,7 @@
                         <!-- Price Tag -->
                         <div class="absolute -top-4 -right-4 bg-accent-500 text-white rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-xl">
                             <span class="text-xs">Starting at</span>
-                            <span class="font-bold text-lg">$699</span>
+                            <span class="font-bold text-lg">KSh 699</span>
                         </div>
                     </div>
                 </div>
@@ -377,7 +377,7 @@
                         <i class="fas fa-truck text-white text-2xl"></i>
                     </div>
                     <h3 class="text-xl font-bold text-gray-900 mb-3">Free Delivery</h3>
-                    <p class="text-gray-600">Free shipping on orders over $500. We deliver to your doorstep.</p>
+                    <p class="text-gray-600">Free shipping on orders over KSh 500. We deliver to your doorstep.</p>
                 </div>
 
                 <div class="text-center p-8 rounded-2xl bg-gradient-to-br from-secondary-50 to-secondary-100 section-fade" style="transition-delay: 0.2s;">
@@ -560,10 +560,10 @@
                                 <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${product.name}</h3>
                                 <div class="flex items-center space-x-2">
                                     ${product.discount_price ? `
-                                        <span class="text-lg font-bold text-primary-600">$${parseFloat(product.discount_price).toFixed(2)}</span>
-                                        <span class="text-sm text-gray-400 line-through">$${parseFloat(product.price).toFixed(2)}</span>
+                                        <span class="text-lg font-bold text-primary-600">KSh ${parseFloat(product.discount_price).toFixed(2)}</span>
+                                        <span class="text-sm text-gray-400 line-through">KSh ${parseFloat(product.price).toFixed(2)}</span>
                                     ` : `
-                                        <span class="text-lg font-bold text-primary-600">$${parseFloat(product.price).toFixed(2)}</span>
+                                        <span class="text-lg font-bold text-primary-600">KSh ${parseFloat(product.price).toFixed(2)}</span>
                                     `}
                                 </div>
                             </div>

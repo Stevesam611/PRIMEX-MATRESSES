@@ -83,13 +83,10 @@
             <div class="flex items-center justify-center mb-12">
                 <div class="flex items-center space-x-4">
                     <div class="step-active w-10 h-10 rounded-full flex items-center justify-center font-semibold" id="step-1-indicator">1</div>
-                    <span class="text-sm font-medium">Shipping</span>
+                    <span class="text-sm font-medium" id="step-1-text">Shipping</span>
                     <div class="w-16 h-1 bg-gray-200" id="step-1-line"></div>
                     <div class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold" id="step-2-indicator">2</div>
-                    <span class="text-sm font-medium text-gray-500" id="step-2-text">Payment</span>
-                    <div class="w-16 h-1 bg-gray-200" id="step-2-line"></div>
-                    <div class="step-pending w-10 h-10 rounded-full flex items-center justify-center font-semibold" id="step-3-indicator">3</div>
-                    <span class="text-sm font-medium text-gray-500" id="step-3-text">Confirm</span>
+                    <span class="text-sm font-medium text-gray-500" id="step-2-text">Confirm</span>
                 </div>
             </div>
 
@@ -151,77 +148,22 @@
                                     <i class="fas fa-arrow-left mr-2"></i>Back to Cart
                                 </a>
                                 <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
-                                    Continue to Payment<i class="fas fa-arrow-right ml-2"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-
-                    <!-- Step 2: Payment Information -->
-                    <div id="step-2" class="hidden bg-white rounded-2xl shadow-lg p-8">
-                        <h2 class="text-xl font-semibold mb-6">Payment Method</h2>
-                        <form id="payment-form" onsubmit="goToStep(3); return false;">
-                            <div class="space-y-4 mb-6">
-                                <label class="flex items-center p-4 border-2 border-primary-600 rounded-lg cursor-pointer bg-primary-50">
-                                    <input type="radio" name="payment_method" value="credit_card" checked class="w-5 h-5 text-primary-600">
-                                    <span class="ml-3 font-medium">Credit / Debit Card</span>
-                                    <div class="ml-auto flex space-x-2">
-                                        <i class="fab fa-cc-visa text-2xl text-gray-400"></i>
-                                        <i class="fab fa-cc-mastercard text-2xl text-gray-400"></i>
-                                        <i class="fab fa-cc-amex text-2xl text-gray-400"></i>
-                                    </div>
-                                </label>
-                                <label class="flex items-center p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary-400">
-                                    <input type="radio" name="payment_method" value="paypal" class="w-5 h-5 text-primary-600">
-                                    <span class="ml-3 font-medium">PayPal</span>
-                                    <i class="fab fa-paypal text-2xl text-gray-400 ml-auto"></i>
-                                </label>
-                            </div>
-
-                            <div id="card-fields">
-                                <div class="mb-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Card Number *</label>
-                                    <input type="text" placeholder="1234 5678 9012 3456" class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-
-                                <div class="grid md:grid-cols-2 gap-6 mb-6">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Expiry Date *</label>
-                                        <input type="text" placeholder="MM/YY" class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">CVV *</label>
-                                        <input type="text" placeholder="123" class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                    </div>
-                                </div>
-
-                                <div class="mb-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Name on Card *</label>
-                                    <input type="text" class="form-input w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none transition-all">
-                                </div>
-                            </div>
-
-                            <div class="flex justify-between">
-                                <button type="button" onclick="goToStep(1)" class="px-8 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
-                                    <i class="fas fa-arrow-left mr-2"></i>Back
-                                </button>
-                                <button type="submit" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
                                     Review Order<i class="fas fa-arrow-right ml-2"></i>
                                 </button>
                             </div>
                         </form>
                     </div>
 
-                    <!-- Step 3: Order Confirmation -->
-                    <div id="step-3" class="hidden bg-white rounded-2xl shadow-lg p-8">
+                    <!-- Step 2: Order Confirmation -->
+                    <div id="step-2" class="hidden bg-white rounded-2xl shadow-lg p-8">
                         <h2 class="text-xl font-semibold mb-6">Review Your Order</h2>
-                        
+
                         <div id="order-review" class="mb-8">
                             <!-- Order details loaded dynamically -->
                         </div>
 
                         <div class="flex justify-between">
-                            <button type="button" onclick="goToStep(2)" class="px-8 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
+                            <button type="button" onclick="goToStep(1)" class="px-8 py-3 border border-gray-200 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors">
                                 <i class="fas fa-arrow-left mr-2"></i>Back
                             </button>
                             <button onclick="placeOrder()" class="btn-primary px-8 py-3 text-white rounded-lg font-semibold">
@@ -235,7 +177,7 @@
                 <div class="lg:col-span-1">
                     <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
                         <h2 class="text-xl font-semibold mb-6">Order Summary</h2>
-                        
+
                         <div id="order-items" class="space-y-4 mb-6 max-h-64 overflow-y-auto">
                             <!-- Items loaded dynamically -->
                         </div>
@@ -243,7 +185,7 @@
                         <div class="border-t border-gray-100 pt-4 space-y-3">
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Subtotal</span>
-                                <span id="checkout-subtotal" class="font-medium">$0.00</span>
+                                <span id="checkout-subtotal" class="font-medium">KSh 0.00</span>
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Shipping</span>
@@ -251,12 +193,12 @@
                             </div>
                             <div class="flex justify-between">
                                 <span class="text-gray-600">Tax (8%)</span>
-                                <span id="checkout-tax" class="font-medium">$0.00</span>
+                                <span id="checkout-tax" class="font-medium">KSh 0.00</span>
                             </div>
                             <div class="border-t border-gray-100 pt-3">
                                 <div class="flex justify-between">
                                     <span class="text-lg font-semibold">Total</span>
-                                    <span id="checkout-total" class="text-2xl font-bold text-primary-600">$0.00</span>
+                                    <span id="checkout-total" class="text-2xl font-bold text-primary-600">KSh 0.00</span>
                                 </div>
                             </div>
                         </div>
@@ -279,7 +221,6 @@
         let currentStep = 1;
         let cartData = null;
         let shippingData = {};
-        let paymentData = {};
 
         // Load cart
         async function loadCart() {
@@ -301,14 +242,14 @@
                         <h4 class="font-medium text-sm line-clamp-1">${item.name}</h4>
                         <p class="text-gray-500 text-sm">Qty: ${item.quantity}</p>
                     </div>
-                    <span class="font-semibold">$${(item.current_price * item.quantity).toFixed(2)}</span>
+                    <span class="font-semibold">KSh ${(item.current_price * item.quantity).toFixed(2)}</span>
                 </div>
             `).join('');
 
-            document.getElementById('checkout-subtotal').textContent = `$${cartData.totals.subtotal.toFixed(2)}`;
-            document.getElementById('checkout-shipping').textContent = cartData.totals.shipping === 0 ? 'FREE' : `$${cartData.totals.shipping.toFixed(2)}`;
-            document.getElementById('checkout-tax').textContent = `$${cartData.totals.tax.toFixed(2)}`;
-            document.getElementById('checkout-total').textContent = `$${cartData.totals.total.toFixed(2)}`;
+            document.getElementById('checkout-subtotal').textContent = `KSh ${cartData.totals.subtotal.toFixed(2)}`;
+            document.getElementById('checkout-shipping').textContent = cartData.totals.shipping === 0 ? 'FREE' : `KSh ${cartData.totals.shipping.toFixed(2)}`;
+            document.getElementById('checkout-tax').textContent = `KSh ${cartData.totals.tax.toFixed(2)}`;
+            document.getElementById('checkout-total').textContent = `KSh ${cartData.totals.total.toFixed(2)}`;
         }
 
         // Go to step
@@ -321,23 +262,12 @@
                 }
                 const formData = new FormData(form);
                 shippingData = Object.fromEntries(formData);
-            }
-
-            if (step === 3) {
-                const form = document.getElementById('payment-form');
-                if (!form.checkValidity()) {
-                    form.reportValidity();
-                    return;
-                }
-                const formData = new FormData(form);
-                paymentData = Object.fromEntries(formData);
                 displayOrderReview();
             }
 
             // Hide all steps
             document.getElementById('step-1').classList.add('hidden');
             document.getElementById('step-2').classList.add('hidden');
-            document.getElementById('step-3').classList.add('hidden');
 
             // Show current step
             document.getElementById(`step-${step}`).classList.remove('hidden');
@@ -349,13 +279,13 @@
 
         // Update step indicators
         function updateStepIndicators(step) {
-            for (let i = 1; i <= 3; i++) {
+            for (let i = 1; i <= 2; i++) {
                 const indicator = document.getElementById(`step-${i}-indicator`);
                 const text = document.getElementById(`step-${i}-text`);
                 const line = document.getElementById(`step-${i}-line`);
 
                 indicator.classList.remove('step-active', 'step-completed', 'step-pending');
-                
+
                 if (i < step) {
                     indicator.classList.add('step-completed');
                     indicator.innerHTML = '<i class="fas fa-check"></i>';
@@ -387,12 +317,6 @@
                             ${shippingData.phone}
                         </p>
                     </div>
-                    <div class="bg-gray-50 rounded-lg p-4">
-                        <h3 class="font-semibold mb-3">Payment Method</h3>
-                        <p class="text-gray-600">
-                            ${paymentData.payment_method === 'credit_card' ? 'Credit / Debit Card' : 'PayPal'}
-                        </p>
-                    </div>
                 </div>
             `;
         }
@@ -410,7 +334,7 @@
                         city: shippingData.city,
                         state: shippingData.state,
                         zip: shippingData.zip,
-                        country: 'USA'
+                        country: 'KE'
                     },
                     billing: {
                         first_name: shippingData.first_name,
@@ -419,7 +343,7 @@
                         city: shippingData.city,
                         state: shippingData.state,
                         zip: shippingData.zip,
-                        country: 'USA'
+                        country: 'KE'
                     },
                     items: cartData.items.map(item => ({
                         product_id: item.product_id,
@@ -429,13 +353,13 @@
                         price: item.current_price
                     })),
                     subtotal: cartData.totals.subtotal,
-                    shipping: cartData.totals.shipping,
+                    shipping_cost: cartData.totals.shipping,
                     tax: cartData.totals.tax,
                     total: cartData.totals.total,
-                    payment_method: paymentData.payment_method
+                    payment_method: 'cash_on_delivery'
                 };
 
-                const response = await fetch('../backend/api/orders.php', {
+                const response = await fetch('/PRIMEX-MATRESSES/backend/api/orders.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
