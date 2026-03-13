@@ -263,6 +263,12 @@
                             </div>
                         </div>
 
+                        <!-- Mattress Size -->
+                        <div class="mb-8" id="size-filter-section" style="display:none">
+                            <h4 class="font-medium mb-4">Mattress Size</h4>
+                            <div class="space-y-2" id="size-filters"></div>
+                        </div>
+
                         <!-- Sort -->
                         <div>
                             <h4 class="font-medium mb-4">Sort By</h4>
@@ -343,7 +349,8 @@
         let currentFilters = {
             category: getUrlParam('category') || '',
             search: getUrlParam('search') || '',
-            sort: 'featured'
+            sort: 'featured',
+            size: ''
         };
 
         // Sidebar search with debounce
@@ -363,6 +370,47 @@
             const chevron = document.getElementById('filter-chevron');
             sidebar.classList.toggle('hidden');
             chevron.classList.toggle('rotate-180');
+        }
+
+        // Load mattress sizes for filters
+        async function loadSizes() {
+            try {
+                const res = await fetch('/PRIMEX-MATRESSES/backend/api/products.php?action=sizes');
+                const result = await res.json();
+                if (result.success && result.data.sizes && result.data.sizes.length > 0) {
+                    document.getElementById('size-filter-section').style.display = '';
+                    const container = document.getElementById('size-filters');
+                    const allBtn = `<button onclick="toggleSize('')"
+                        class="size-pill w-full text-left px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-150
+                            ${!currentFilters.size ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-700 border-gray-200 hover:border-primary-400 hover:text-primary-600'}">
+                        All Sizes
+                    </button>`;
+                    const pills = result.data.sizes.map(size => `
+                        <button onclick="toggleSize('${size}')"
+                            class="size-pill w-full text-left px-3 py-2 rounded-lg border text-sm font-medium transition-all duration-150
+                                ${currentFilters.size === size ? 'bg-primary-600 text-white border-primary-600' : 'bg-white text-gray-700 border-gray-200 hover:border-primary-400 hover:text-primary-600'}">
+                            ${size}
+                        </button>
+                    `).join('');
+                    container.innerHTML = allBtn + pills;
+                }
+            } catch (e) { console.error('Error loading sizes:', e); }
+        }
+
+        function toggleSize(size) {
+            currentFilters.size = size;
+            currentPage = 1;
+            document.querySelectorAll('.size-pill').forEach(btn => {
+                const isActive = btn.getAttribute('onclick') === `toggleSize('${size}')` ||
+                    (size === '' && btn.getAttribute('onclick') === "toggleSize('')");
+                btn.classList.toggle('bg-primary-600', isActive);
+                btn.classList.toggle('text-white', isActive);
+                btn.classList.toggle('border-primary-600', isActive);
+                btn.classList.toggle('bg-white', !isActive);
+                btn.classList.toggle('text-gray-700', !isActive);
+                btn.classList.toggle('border-gray-200', !isActive);
+            });
+            loadProducts();
         }
 
         // Load categories for filters
@@ -400,6 +448,7 @@
                 
                 if (currentFilters.category) url += `&category=${encodeURIComponent(currentFilters.category)}`;
                 if (currentFilters.search) url += `&search=${encodeURIComponent(currentFilters.search)}`;
+                if (currentFilters.size) url += `&size=${encodeURIComponent(currentFilters.size)}`;
                 
                 const response = await fetch(url);
                 const result = await response.json();
@@ -548,12 +597,17 @@
             currentFilters = {
                 category: '',
                 search: '',
-                sort: 'featured'
+                sort: 'featured',
+                size: ''
             };
             currentPage = 1;
 
             // Reset UI
             document.querySelectorAll('.category-pill').forEach(btn => {
+                btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
+                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+            });
+            document.querySelectorAll('.size-pill').forEach(btn => {
                 btn.classList.remove('bg-primary-600', 'text-white', 'border-primary-600');
                 btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
             });
@@ -576,6 +630,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             loadCategories();
+            loadSizes();
             loadProducts();
             getCart().then(data => updateCartCount(data.totals ? data.totals.item_count : 0));
             initUserAccount();

@@ -318,6 +318,20 @@ $auth->requireRole(['admin', 'superadmin']);
                     <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                     <textarea id="product-description" rows="4" class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
                 </div>
+                <!-- Sizes -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Available Sizes</label>
+                    <p class="text-xs text-gray-400 mb-2">Enter a size (e.g. 4x6, 5x6, 6x6) and click Add or press Enter</p>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="size-input" placeholder="e.g. 4x6"
+                            class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+                            onkeydown="if(event.key==='Enter'){event.preventDefault();addSize();}">
+                        <button type="button" onclick="addSize()"
+                            class="px-4 py-2 bg-primary-600 text-white rounded-lg text-sm font-medium hover:bg-primary-700">Add</button>
+                    </div>
+                    <div id="sizes-tags" class="flex flex-wrap gap-2 min-h-[28px]"></div>
+                </div>
+
                 <div class="flex items-center space-x-4 mb-6">
                     <label class="flex items-center">
                         <input type="checkbox" id="product-featured" class="w-4 h-4 text-primary-600 rounded">
@@ -340,6 +354,37 @@ $auth->requireRole(['admin', 'superadmin']);
         let currentPage = 1;
         let categories = [];
         let uploadedImages = []; // [{url, isMain}]
+        let productSizes = [];   // ['4x6', '5x6', ...]
+
+        function renderSizeTags() {
+            const container = document.getElementById('sizes-tags');
+            if (productSizes.length === 0) {
+                container.innerHTML = '<span class="text-xs text-gray-400 italic">No sizes added</span>';
+                return;
+            }
+            container.innerHTML = productSizes.map((s, i) => `
+                <span class="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm font-medium">
+                    ${s}
+                    <button type="button" onclick="removeSize(${i})" class="text-primary-400 hover:text-primary-700 font-bold leading-none ml-0.5">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        function addSize() {
+            const input = document.getElementById('size-input');
+            const val = input.value.trim();
+            if (!val) return;
+            if (!productSizes.includes(val)) {
+                productSizes.push(val);
+                renderSizeTags();
+            }
+            input.value = '';
+        }
+
+        function removeSize(i) {
+            productSizes.splice(i, 1);
+            renderSizeTags();
+        }
 
         function renderImagesGrid() {
             const grid = document.getElementById('images-grid');
@@ -527,6 +572,8 @@ $auth->requireRole(['admin', 'superadmin']);
             document.getElementById('upload-status').className = 'text-xs text-gray-500 mt-2';
             uploadedImages = [];
             renderImagesGrid();
+            productSizes = [];
+            renderSizeTags();
         }
 
         function closeModal() {
@@ -567,7 +614,12 @@ $auth->requireRole(['admin', 'superadmin']);
                     document.getElementById('upload-status').className = 'text-xs text-gray-500 mt-2';
                     document.getElementById('product-featured').checked = p.is_featured;
                     document.getElementById('product-active').checked = p.is_active;
-                    
+
+                    // Populate sizes
+                    try { productSizes = JSON.parse(p.sizes || '[]'); } catch(e) { productSizes = []; }
+                    if (!Array.isArray(productSizes)) productSizes = [];
+                    renderSizeTags();
+
                     document.getElementById('modal-title').textContent = 'Edit Product';
                     document.getElementById('product-modal').classList.remove('hidden');
                 }
@@ -594,7 +646,8 @@ $auth->requireRole(['admin', 'superadmin']);
                 main_image: mainImg ? mainImg.url : null,
                 images: uploadedImages.map(img => ({ url: img.url, isMain: img.isMain })),
                 is_featured: document.getElementById('product-featured').checked,
-                is_active: document.getElementById('product-active').checked
+                is_active: document.getElementById('product-active').checked,
+                sizes: productSizes
             };
 
             try {

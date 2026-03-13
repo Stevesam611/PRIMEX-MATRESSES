@@ -8,9 +8,25 @@ require_once __DIR__ . '/../includes/auth.php';
 $method = $_SERVER['REQUEST_METHOD'];
 $db = Database::getInstance();
 
+// Migration: ensure sizes column exists
+try { $db->query("ALTER TABLE products ADD COLUMN IF NOT EXISTS sizes JSONB DEFAULT '[]'"); } catch (Exception $e) {}
+
 try {
     switch ($method) {
         case 'GET':
+            // Return all distinct sizes across active products
+            if (isset($_GET['action']) && $_GET['action'] === 'sizes') {
+                $stmt = $db->query(
+                    "SELECT DISTINCT jsonb_array_elements_text(sizes) AS size
+                     FROM products
+                     WHERE is_active = TRUE AND sizes IS NOT NULL AND sizes != '[]'::jsonb
+                     ORDER BY size"
+                );
+                $sizes = array_column($stmt->fetchAll(), 'size');
+                successResponse(['sizes' => $sizes]);
+                break;
+            }
+
             // Get single product or list
             if (isset($_GET['slug'])) {
                 // Get product by slug
@@ -79,6 +95,12 @@ try {
                     $params['search'] = '%' . $_GET['search'] . '%';
                 }
                 
+                // Filter by mattress size
+                if (isset($_GET['size']) && !empty($_GET['size'])) {
+                    $where[] = "p.sizes @> :size::jsonb";
+                    $params['size'] = json_encode([$_GET['size']]);
+                }
+
                 // Price range
                 if (isset($_GET['min_price']) && is_numeric($_GET['min_price'])) {
                     $where[] = "COALESCE(p.discount_price, p.price) >= :min_price";
@@ -138,8 +160,8 @@ try {
                 $slug = $baseSlug . '-' . $slugCount++;
             }
 
-            $sql = "INSERT INTO products (name, slug, description, short_description, price, discount_price, sku, stock_quantity, category_id, main_image, specifications, features, is_featured, weight, dimensions, warranty)
-                    VALUES (:name, :slug, :description, :short_description, :price, :discount_price, :sku, :stock_quantity, :category_id, :main_image, :specifications, :features, :is_featured, :weight, :dimensions, :warranty)
+            $sql = "INSERT INTO products (name, slug, description, short_description, price, discount_price, sku, stock_quantity, category_id, main_image, specifications, features, is_featured, weight, dimensions, warranty, sizes)
+                    VALUES (:name, :slug, :description, :short_description, :price, :discount_price, :sku, :stock_quantity, :category_id, :main_image, :specifications, :features, :is_featured, :weight, :dimensions, :warranty, :sizes)
                     RETURNING id";
 
             $params = [
@@ -158,7 +180,8 @@ try {
                 'is_featured' => !empty($data['is_featured']) ? 'true' : 'false',
                 'weight' => $data['weight'] ?? null,
                 'dimensions' => $data['dimensions'] ?? null,
-                'warranty' => $data['warranty'] ?? null
+                'warranty' => $data['warranty'] ?? null,
+                'sizes' => json_encode(array_values(array_filter($data['sizes'] ?? [])))
             ];
 
             $stmt = $db->query($sql, $params);
@@ -207,9 +230,10 @@ try {
                     weight = :weight,
                     dimensions = :dimensions,
                     warranty = :warranty,
+                    sizes = :sizes,
                     updated_at = NOW()
                     WHERE id = :id";
-            
+
             $params = [
                 'id' => $id,
                 'name' => $data['name'],
@@ -227,7 +251,8 @@ try {
                 'is_active' => !empty($data['is_active']) ? 'true' : 'false',
                 'weight' => $data['weight'] ?? null,
                 'dimensions' => $data['dimensions'] ?? null,
-                'warranty' => $data['warranty'] ?? null
+                'warranty' => $data['warranty'] ?? null,
+                'sizes' => json_encode(array_values(array_filter($data['sizes'] ?? [])))
             ];
             
             $db->query($sql, $params);
