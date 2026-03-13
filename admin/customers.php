@@ -4,7 +4,7 @@
  */
 
 require_once __DIR__ . '/../backend/includes/auth.php';
-$auth->requireAdmin();
+$auth->requireRole(['admin', 'superadmin']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,6 +90,7 @@ $auth->requireAdmin();
                 <a href="messages.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg">
                     <i class="fas fa-envelope w-5"></i><span class="font-medium">Messages</span>
                 </a>
+                <a href="accounts.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-user-shield w-5"></i><span class="font-medium">Accounts</span></a>
             </nav>
             <div class="absolute bottom-0 w-64 p-4 border-t border-gray-100">
                 <button onclick="logout()" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors">

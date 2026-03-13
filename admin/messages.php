@@ -4,7 +4,7 @@
  */
 
 require_once __DIR__ . '/../backend/includes/auth.php';
-$auth->requireAdmin();
+$auth->requireRole(['admin', 'superadmin', 'staff']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -70,17 +70,25 @@ $auth->requireAdmin();
                 <span class="text-xl font-bold bg-gradient-to-r from-primary-700 to-secondary-700 bg-clip-text text-transparent">Primex</span>
             </div>
         </div>
+        <?php $isAdmin = $auth->hasRole(['admin', 'superadmin']); ?>
         <nav class="p-4 space-y-1">
+            <?php if ($isAdmin): ?>
             <a href="index.php"      class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-tachometer-alt w-5"></i><span class="font-medium">Dashboard</span></a>
             <a href="products.php"   class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-box w-5"></i><span class="font-medium">Products</span></a>
+            <?php endif; ?>
             <a href="orders.php"     class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-shopping-cart w-5"></i><span class="font-medium">Orders</span></a>
+            <?php if ($isAdmin): ?>
             <a href="categories.php" class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-tags w-5"></i><span class="font-medium">Categories</span></a>
             <a href="customers.php"  class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-users w-5"></i><span class="font-medium">Customers</span></a>
+            <?php endif; ?>
             <a href="messages.php"   class="sidebar-link active flex items-center space-x-3 px-4 py-3 text-primary-600 rounded-lg">
                 <i class="fas fa-envelope w-5"></i>
                 <span class="font-medium">Messages</span>
                 <span id="unread-badge" class="ml-auto hidden bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full"></span>
             </a>
+            <?php if ($isAdmin): ?>
+            <a href="accounts.php"   class="sidebar-link flex items-center space-x-3 px-4 py-3 text-gray-600 hover:text-primary-600 rounded-lg"><i class="fas fa-user-shield w-5"></i><span class="font-medium">Accounts</span></a>
+            <?php endif; ?>
         </nav>
         <div class="absolute bottom-0 w-64 p-4 border-t border-gray-100">
             <button onclick="logout()" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors">

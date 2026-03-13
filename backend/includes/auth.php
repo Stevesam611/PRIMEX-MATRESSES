@@ -84,7 +84,7 @@ class Auth {
         return true;
     }
     
-    // Require admin login
+    // Require admin login (any role)
     public function requireAdmin() {
         if (!$this->isAdminLoggedIn()) {
             if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest') {
@@ -94,6 +94,21 @@ class Auth {
                 exit;
             }
         }
+    }
+
+    // Require specific role(s) — redirects staff away from admin-only pages
+    public function requireRole(array $roles) {
+        $this->requireAdmin();
+        if (!in_array($_SESSION['admin_role'] ?? '', $roles, true)) {
+            // Staff trying to access admin-only page → send to orders
+            header('Location: ' . ADMIN_URL . '/orders.php');
+            exit;
+        }
+    }
+
+    // Returns true if current admin has one of the given roles
+    public function hasRole(array $roles): bool {
+        return in_array($_SESSION['admin_role'] ?? '', $roles, true);
     }
     
     // Logout
