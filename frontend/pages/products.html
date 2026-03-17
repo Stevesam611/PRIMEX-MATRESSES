@@ -333,6 +333,7 @@
 
     <!-- Scroll to Top -->
     <button id="scroll-top-btn" aria-label="Scroll to top"
+        onclick="window.scrollTo({top:0,behavior:'smooth'})"
         class="fixed bottom-6 right-6 w-12 h-12 bg-primary-600 text-white rounded-full shadow-xl flex items-center justify-center z-40 opacity-0 pointer-events-none transition-all duration-300 hover:bg-primary-700 hover:-translate-y-1">
         <i class="fas fa-arrow-up"></i>
     </button>
@@ -345,6 +346,20 @@
 
     <script src="../js/main.js"></script>
     <script>
+        // Scroll-to-top visibility
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('scroll-top-btn');
+            if (!btn) return;
+            const scrolled = window.scrollY || document.documentElement.scrollTop;
+            if (scrolled > 300) {
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'auto';
+            } else {
+                btn.style.opacity = '0';
+                btn.style.pointerEvents = 'none';
+            }
+        }, { passive: true });
+
         let currentPage = 1;
         let currentFilters = {
             category: getUrlParam('category') || '',

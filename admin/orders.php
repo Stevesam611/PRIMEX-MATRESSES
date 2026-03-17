@@ -527,7 +527,7 @@ $auth->requireRole(['admin', 'superadmin', 'staff']);
             transform: translate(-50%, -50%) rotate(-35deg);
             font-size: 120px;
             font-weight: 900;
-            color: rgba(30, 58, 138, 0.07);
+            color: rgba(234, 88, 12, 0.07);
             letter-spacing: 12px;
             pointer-events: none;
             z-index: 0;
@@ -537,12 +537,12 @@ $auth->requireRole(['admin', 'superadmin', 'staff']);
         .page { max-width:750px; margin:0 auto; padding:40px; position:relative; z-index:1; }
 
         /* Letterhead */
-        .letterhead { border-bottom:3px solid #2563eb; padding-bottom:18px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
+        .letterhead { border-bottom:3px solid #ea580c; padding-bottom:18px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
         .logo-wrap { display:flex; align-items:center; gap:14px; }
-        .logo-icon { width:52px; height:52px; background:linear-gradient(135deg,#2563eb,#7c3aed); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+        .logo-icon { width:52px; height:52px; background:linear-gradient(135deg,#ea580c,#c2410c); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
         .logo-text { }
-        .company-name { font-size:20px; font-weight:900; color:#1e3a8a; letter-spacing:0.5px; text-transform:uppercase; line-height:1.1; }
-        .slogan { font-size:10.5px; color:#2563eb; font-style:italic; margin-top:3px; }
+        .company-name { font-size:20px; font-weight:900; color:#9a3412; letter-spacing:0.5px; text-transform:uppercase; line-height:1.1; }
+        .slogan { font-size:10.5px; color:#ea580c; font-style:italic; margin-top:3px; }
         .contact-block { text-align:right; font-size:11.5px; color:#4b5563; line-height:1.8; }
         .contact-block strong { color:#1f2937; display:block; margin-bottom:2px; }
 
@@ -555,7 +555,7 @@ $auth->requireRole(['admin', 'superadmin', 'staff']);
         /* Status badge */
         .status-badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; text-transform:capitalize; }
         .status-pending   { background:#fef9c3; color:#854d0e; }
-        .status-processing{ background:#dbeafe; color:#1e40af; }
+        .status-processing{ background:#ffedd5; color:#9a3412; }
         .status-shipped   { background:#ede9fe; color:#5b21b6; }
         .status-delivered { background:#dcfce7; color:#14532d; }
         .status-cancelled { background:#fee2e2; color:#7f1d1d; }
@@ -563,7 +563,7 @@ $auth->requireRole(['admin', 'superadmin', 'staff']);
         /* Items table */
         .section-title { font-size:12px; font-weight:700; color:#1f2937; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; }
         table { width:100%; border-collapse:collapse; margin-bottom:24px; }
-        thead tr { background:#1e3a8a; color:#fff; }
+        thead tr { background:#ea580c; color:#fff; }
         thead th { padding:10px 12px; text-align:left; font-size:12px; font-weight:600; }
         thead th:nth-child(2) { text-align:center; }
         thead th:nth-child(3), thead th:nth-child(4) { text-align:right; }
@@ -572,11 +572,11 @@ $auth->requireRole(['admin', 'superadmin', 'staff']);
         /* Totals */
         .totals { margin-left:auto; width:280px; }
         .totals-row { display:flex; justify-content:space-between; padding:6px 0; font-size:13px; border-bottom:1px solid #f3f4f6; }
-        .totals-row.grand { border-top:2px solid #1e3a8a; border-bottom:none; padding-top:10px; margin-top:4px; font-size:15px; font-weight:700; color:#1e3a8a; }
+        .totals-row.grand { border-top:2px solid #ea580c; border-bottom:none; padding-top:10px; margin-top:4px; font-size:15px; font-weight:700; color:#ea580c; }
 
         /* Footer */
         .footer { margin-top:36px; border-top:1px solid #e5e7eb; padding-top:14px; text-align:center; font-size:11px; color:#9ca3af; }
-        .footer strong { color:#2563eb; }
+        .footer strong { color:#ea580c; }
 
         @media print {
             body { print-color-adjust:exact; -webkit-print-color-adjust:exact; }
@@ -615,7 +615,7 @@ $auth->requireRole(['admin', 'superadmin', 'staff']);
     <!-- Order Title -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
         <div>
-            <div style="font-size:18px;font-weight:700;color:#1e3a8a;">ORDER RECEIPT</div>
+            <div style="font-size:18px;font-weight:700;color:#9a3412;">ORDER RECEIPT</div>
             <div style="font-size:13px;color:#6b7280;margin-top:2px;">${o.order_number}</div>
         </div>
         <div style="text-align:right;">
